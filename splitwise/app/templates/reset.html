@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+        <link rel="stylesheet" href="homepage.css" type="text/css">
+        <style>
+                body{margin:0px 0px;padding:0px 0px; background-color:#f2f2f2;}
+		tr > td{ padding:10px; }
+		#label{width:200px; text-align:left;}
+        </style>
+</head>
+<body>
+        <div class="title" style="height:90px; width:100%; background-color:#24478f; margin-left:0px; margin-top:0px; float:left; position:relative;">
+           <span id="name" style="margin-left:400px;font-weight:bold; top:15px; font-size:350%; color:#f2f2f2; position:relative;">
+                splitwise
+           </span>
+	</div>
+	<div class="resetdiv" style="float:left; height:400px; width: 100%; margin-left:300px; margin-top:200px">
+		<table style="border:2px solid #24478f">
+		   <caption style="text-align:center; font-size: 300%;">Reset Password</caption>
+			<tr>
+				<td id="label">Username:</td>
+				<td>
+		    			<input type="email" class="inputtext" style="color:black;" name="resetemail" id="resetemail" value="" tabindex="1" />
+				</td>
+			</tr>
+			<tr>
+				<td id="label">New Password:</td>
+				<td>
+		    			<input type="password" class="inputtext" style="color:black;" name="resetpass" id="resetpass" value="" tabindex="1" />
+				</td>
+			</tr>
+			<tr>
+				<td id="label">Confirm Password:</td>
+				<td>
+		    			<input type="password" class="inputtext" style="color:black;" name="resetconpass" id="resetconpass" value="" tabindex="1" />
+				</td>
+			</tr>
+		</table>
+		<div id="reset" style="margin-left:135px; margin-top:15px;">
+		   		<input type="submit" value="Reset" id="resetbutton" style="height:37px; width:110px; color:#f2f2f2; border:none; background-color:#24478f" tabindex="4">
+		</div>
+		
+	</div>
+</body>
+</html>

@@ -1,0 +1,4776 @@
+#+TITLE: Main Project
+#+AUTHOR: AANSHUL SADARIA, KRUTAM HATHI, PRIYANSH DALSANIA
+#+EMAIL: aanshul.sadaria@students.iiit.ac.in
+#+PROPERTY: session *python*
+#+PROPERTY: results output
+#+PROPERTY: exports code
+#+TAGS: boilerplate(b) notes(n) solution(s)
+#+SETUPFILE: ../../org-templates/level-2.org
+
+
+* Our Journey
+** How it all started?
+It all started during the second mids, when suddenly an idea struck my mind - 
+we all used to have frequent cash transactions at regularly visited places, 
+and at times this tend to be tedious solving the debts and credits, so how 
+nice would it have been to have some sort of application to solve the cash 
+flow involving lesser number of transactions, all automated. Then I discussed 
+just a naive idea that rose out of boredom of studying, with Aanshul, involving 
+a similar approach to one we have used in the actual app. As fate had it, we 
+got Splitwise as our project, and we started implementing the ideas in a more 
+systematic manner.
+
+** The schema we planned!
+CREATE TABLE dashboard (
+	main_id INTEGER NOT NULL, 
+	t_id INTEGER, 
+	pay_to VARCHAR NOT NULL, 
+	pay_by VARCHAR NOT NULL, 
+	amount FLOAT NOT NULL, 
+	status INTEGER, 
+	PRIMARY KEY (main_id)
+)
+
+
+CREATE TABLE login (
+	name VARCHAR(80) NOT NULL, 
+	password VARCHAR NOT NULL, 
+	email VARCHAR NOT NULL, 
+	username VARCHAR NOT NULL, 
+	country VARCHAR(120) NOT NULL, 
+	dob VARCHAR(120) NOT NULL, 
+	gender VARCHAR(120), 
+	mobile INTEGER NOT NULL, 
+	friends VARCHAR, 
+	history VARCHAR, 
+	nettransaction VARCHAR, 
+	PRIMARY KEY (username), 
+	UNIQUE (email), 
+	UNIQUE (username)
+)
+
+CREATE TABLE transaction (
+	tid INTEGER NOT NULL, 
+	pay_for VARCHAR NOT NULL, 
+	pay_by VARCHAR NOT NULL, 
+	description VARCHAR NOT NULL, 
+	bill_amount FLOAT NOT NULL, 
+	creator VARCHAR NOT NULL, 
+	date VARCHAR, 
+	PRIMARY KEY (tid)
+)
+
+** How we approached?
+We divided the work amongst ourselves as : Aanshul took up designing the front-end of the app, 
+the user-interface with styling and functionality, Krutam took up creating the back-end, and I, 
+Priyansh, took up making the algorithm handling files.
+
+We started implementing with the user login cum new user registration
+page, the first page any user would encounter, by the completion of
+which,the routes were ready. Then we had created a basic script to
+handle cash transcations among given user set under one mode : given
+exact expenditures, and contributions.
+
+Nextly, we linked the files using ajax calls, and tried finishing the inital page, 
+debugging some errors that rose midway.
+
+Then we started working upon the dashboard after the successful
+login, and started adding the various modes of splitting up the
+money, namely : Paid by user, Paid by multiple people, Split equally,
+Split by exact amount, Split by percentage, and Split by shares,
+extending the functionality of the cash flow minimising script used,
+on the go. Then we worked on the itemising bill segment.
+
+As an when felt necessary, we kept on improving th UI by addition of
+features, to make the site simpler. Then we added the recent
+activity, and all expenses tabs along with appropriate routes, for
+settling up the transactions up to the current point from the last
+unsettled transaction set, and deletion of recent activities.
+
+Throughout the process, we resorted to using the actual Splitwise app in 
+order to understand its working, and also for the UI, which is heavily 
+inspired from Facebook as well.
+
+
+* User Manual - Guide
+** What you see?
+After logging into the site, you encounter a dashboard, consisting of links, 
+like : backlink to the Dashboard itself, Recent Activities (top 5), and All expenses tab.
+
+Two main options provided on the dashboard are : add a bill, and settle up.
+
+** How you proceed with adding bill?
+Firstly, you add friends to the list, using an Add Friend link on the panel. 
+Then, you add a bill, referring the transactions that took place during an event. 
+You will be prompted to add a subset of your friends involved in the bill. 
+Then you are required to give a description about the event, and the total amount 
+involved. Then there are two options ahead : whether you incurred the entire bill, 
+which is to be split equally, or, your friends are also involved in earlier payment, 
+and/or the bill is to be split unequally. In which case, you enter the payments 
+made by your friends, and the mode of splitting, i.e., split equally, split by exact 
+amount, split by shares, split by percentage. If you enter payments that do not sum 
+up to total amount, or total sum of division or percentage is not equal to total, 
+100 respectively, then error is displayed. Else, you can proceed further.
+
+** How itemized bill work?
+Along with these options we have an additional feature of itemized bill. Here you 
+can add item by item, and the price of that item. Also, how much a person expended 
+on that item is a liberty which isn’t provided in the original app. Taxes can be 
+added which would be a part of the total amount you added in the first step. Tip 
+can also be added and mind you that tip isn’t a part of the bill amount. So, in 
+the first step enter only the amount of the bill and not the tip as is natural 
+whenever we go to a restaurant. Everything else will be managed by our smart app.
+
+** After adding bill
+Clicking on the done button, you are redirected to the dashboard, where the refreshed 
+net transactions, involving yourself are displayed. Then you can settle up any bill. 
+You will be presented list of events you are involved in, where you can settle up 
+the unsettled events in which you are involved.
+
+** Settling and deleting
+In recent activities or all expenses tab, you can find an option to delete the events 
+that you created.
+
+You can find the logout option in the dropdown menu appearing on the top right portion 
+of the screen.
+ 
+Thank you.
+
+
+* Requirements
+** =requirements.txt= :
+This file contains the versions of the modules which are used in the entire project.
+It explains the viewers, who try to use the project to install all the mentioned in the file.
+
+** Content:
+#+name: requirements
+#+BEGIN_SRC 
+appdirs==1.4.3
+click==6.7
+Flask==0.12
+Flask-SQLAlchemy==2.2
+itsdangerous==0.24
+Jinja2==2.9.5
+MarkupSafe==1.0
+packaging==16.8
+pyparsing==2.2.0
+six==1.10.0
+SQLAlchemy==1.1.6
+Werkzeug==0.12.1
+#+END_SRC
+
+
+* Config File
+** =config.py=:
+This configuration file contains all the information about the database and various other meta information used in the
+project.
+
+** Content:
+#+name: config
+#+BEGIN_SRC python
+# Statement for enabling the development environment
+DEBUG = True
+
+# Define the application directory
+import os
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))  
+
+# Define the database - we are working with
+# SQLite for this example
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
+DATABASE_CONNECT_OPTIONS = {}
+
+# Application threads. A common general assumption is
+# using 2 per available processor cores - to handle
+# incoming requests using one and performing background
+# operations using the other.
+THREADS_PER_PAGE = 2
+
+# Enable protection agains *Cross-site Request Forgery (CSRF)*
+CSRF_ENABLED     = True
+
+# Use a secure, unique and absolutely secret key for
+# signing the data. 
+CSRF_SESSION_KEY = "secret"
+
+# Secret key for signing cookies
+SECRET_KEY = "secret"
+#+END_SRC
+
+
+* Main Server (WSGI)
+** =wsgi.py=:
+It contains nothing but is the most important part of the project. It runs the server, and yes, that's it.
+
+** Content:
+#+name: wsgi
+#+BEGIN_SRC python
+from app import app as application
+
+if __name__ == "__main__":
+	application.run()
+#+END_SRC
+
+
+
+* Initiate File for uWSGI
+** =myproject.ini=:
+This initiate file contains all the information regarding the socket file(myproject.sock),
+This has the permissions of the socket, and the number of processes and module used.
+
+** Content:
+#+name: initiate
+#+BEGIN_SRC 
+[uwsgi]
+module = wsgi
+master = true
+processes = 5
+socket = myproject.sock
+chmod-socket = 777
+vacuum = true
+daemonize = /tmp/uwsgi.log
+#+END_SRC
+
+
+
+
+* Main init.py file
+** =__init__.py=:
+This file contains the skeleton of the project.
+All the controllers used in the project have been imported from the
+respective folders. The authentication require function is also present in this
+file. Blueprints used are also imported along with creating the database.
+In a nutshell, all the imports are present in this file, not necessary to understand
+this in much depth.
+
+** Content:
+#+name: init
+#+BEGIN_SRC python
+# Import flask and template operators
+from flask import *
+
+# Import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
+
+from functools import wraps
+
+# Define the WSGI application object
+app = Flask(__name__)
+
+# Configurations
+app.config.from_object('config')
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Define the database object which is imported
+# by modules and controllers
+db = SQLAlchemy(app)
+
+# Sample HTTP error handling
+#@app.errorhandler(404)
+#def not_found(error):
+#   return render_template('index.html'), 200
+
+#@app.before_request
+#def csrf_protect():
+#	if request.method == "POST":
+#		token = session.pop('_csrf_token', None)
+#		if not token or token != request.form.get('_csrf_token'):
+#	abort(403)
+
+#def generate_csrf_token():
+#	if '_csrf_token' not in session:
+#		session['_csrf_token'] = some_random_string()
+#	return session['_csrf_token']
+
+#app.jinja_env.globals['csrf_token'] = generate_csrf_token
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if 'user_id' not in session:
+            return jsonify(message="Unauthorized", success=False), 401
+        return f(*args, **kwargs)
+    return decorated
+
+# Import a module / component using its blueprint handler variable (mod_auth)
+from app.user.controllers import mod_user
+from app.login.controllers import mod_login
+from app.friends.controllers import mod_friend
+from app.dashboard.controllers import mod_dashboard
+
+# Register blueprint(s)
+app.register_blueprint(mod_user)
+app.register_blueprint(mod_login)
+app.register_blueprint(mod_friend)
+app.register_blueprint(mod_dashboard)
+
+# Build the database:
+# This will create the database file using SQLAlchemy
+db.create_all()
+#+END_SRC
+
+
+
+
+
+
+
+* Users Folder
+** =models.py=:
+This file contains the database(table) for user, where all the users who
+registered are stored. This database has username, first name, last name,
+gender and other personal information and login information associated
+with the user.
+
+*** Content:
+#+name: user_models
+#+BEGIN_SRC python
+from flask_sqlalchemy import SQLAlchemy
+from app import db
+from werkzeug.security import generate_password_hash, check_password_hash
+
+class User(db.Model):
+	__tablename__='login'
+	name=db.Column(db.String(80),nullable=False)
+	password=db.Column(db.String,nullable=False)
+	email=db.Column(db.String,nullable=False,unique=True)
+	username=db.Column(db.String,unique=True,primary_key=True)
+	country=db.Column(db.String(120),nullable=False)
+	dob=db.Column(db.String(120),nullable=False)
+	gender=db.Column(db.String(120),nullable=True)
+	mobile=db.Column(db.Integer,nullable=False)
+	friends=db.Column(db.String)
+	history=db.Column(db.String)
+	nettransaction=db.Column(db.String)
+	
+	def __init__(self, username, first_name, last_name, email, mobile, month, date, year, country, gender,password):
+		self.name=first_name+" "+last_name
+		self.email=email
+		self.username=username
+		self.mobile=mobile
+		self.friends=''
+		self.gender=gender
+		self.country=country
+		self.dob=date+'-'+month+'-'+year
+		self.password = generate_password_hash(password)
+		self.nettransaction = '{}'
+		self.history = ''
+        
+	def check_password(self, password):
+		return check_password_hash(self.password, password)
+    
+	def __repr__(self):
+		return "<User %s %s>" % (self.username, self.email)
+#+END_SRC
+
+
+
+** =controllers.py=:
+This file contains all the routes associated with the registration
+of the user. Also, it includes routes for loading the homepage, it
+renders the html page when requested the route. It also includes
+route which on logging in will redirect the user to his dashboard.
+Validation of the crsf token also happens in this very route.
+
+*** Content:
+#+name: user_controllers
+#+BEGIN_SRC python
+from flask import *
+from sqlalchemy.exc import IntegrityError
+from app import db
+from app.user.models import User
+import random,string
+from random import randint
+from .math import *
+
+mod_user = Blueprint('user', __name__)
+
+@mod_user.route('/addUser',methods=['POST'])
+def add_user():
+	print('started')
+	first_name = request.form["first_name"]
+	token = request.form["token"]
+	last_name = request.form["last_name"]
+	password = request.form["password"]
+	username = request.form["username"]
+	gender = request.form["gender"]
+	country = request.form["country"]
+	mobile= request.form["mobile"]
+	email = request.form["email"]
+	date = request.form["date"]
+	month = request.form["month"]
+	year = request.form["year"]
+	print(session['csrf_token'], token)
+	if str(session['csrf_token'])!=str(token):
+		return redirect('/home')
+	print(username, first_name, last_name, email, mobile, month, date, year, country, gender, password)
+	user=User(username,first_name,last_name,email,mobile,month,date,year,country,gender,password)
+	print('reached')
+	db.session.add(user)
+	db.session.commit()
+	return "You have signed in successfully"
+
+@mod_user.route('/deleteuser', methods=['GET'])
+def deluser():
+	data = User.query.all()
+	for i in data:
+		i.nettransaction = '{}'
+		i.history = ''
+		i.friends = ''
+		db.session.commit()
+	return "chodu"
+	
+
+@mod_user.route('/usercheck', methods=['GET'])
+def userche():
+	x = User.query.all()
+	print(x)
+	for i in x:
+		print(i.mobile)
+	return "done"
+
+
+@mod_user.route('/', methods=['GET'])
+def home():
+	if 'user_name' in session:
+		return redirect ('/dash')
+	
+	return render_template('home.html')
+
+@mod_user.route('/home', methods=['GET'])
+def h():
+	if 'user_name' in session:
+		return redirect ('/dash')
+	
+	return redirect('/homepage')
+
+@mod_user.route('/homepage', methods=['GET'])
+def homepage():
+	if 'csrf_token' not in session:
+		session['csrf_token']=gene()
+		
+	if not session['csrf_token']:
+		session['csrf_token']=gene()
+	else: 
+		session.pop('csrf_token')
+		session['csrf_token']=gene()
+	if 'user_name' in session:
+		return redirect ('/dash')
+	
+	return render_template('homepage.html',token=session['csrf_token'])
+
+@mod_user.route('/dash', methods=['GET'])
+def dash():
+	if 'user_name' not in session:
+		return redirect('/home')
+	return redirect('/dashboard')
+
+@mod_user.route('/dashboard', methods=['GET'])
+def dashboard():
+	session['csrf_token']=gene()
+	if 'user_name' not in session:
+		return redirect('/home')
+	user = User.query.filter(User.username==session['user_name']).first()
+	return render_template('dashboard.html',user=user)
+
+@mod_user.route('/reset', methods=['GET'])
+def reset():
+	return render_template('reset.html')
+
+@mod_user.route('/reset', methods=['POST'])
+def re():
+	username=request.form['username']
+	newp=request.form['password']
+	user=User.query.filter(User.username==username).first()
+	user.password=newp
+	db.session.commit()
+	return redirect('/')
+
+@mod_user.route('/user', methods=['POST'])
+def get_users():
+	print('in user')
+	user=request.form['user']
+	u=User.query.filter(User.username==user).first()
+	if u:
+		return "False"
+	else:
+		return "True"
+
+@mod_user.route('/users', methods=['GET'])
+def get():
+	u=User.query.all()
+	a=[]
+	for i in u:
+		a.append(i.username)
+	return jsonify(a)
+
+@mod_user.route('/user', methods=['GET'])
+def get_user():
+	return jsonify(session['user_name'])
+
+'''@mod_user.route('/login', methods=['POST'])
+def login():
+    try:
+        email = request.form['email']
+        password = request.form['password']
+    except KeyError as e:
+        return jsonify(success=False, message="%s not sent in the request" % e.args), 400
+
+    user = User.query.filter(User.email == email).first()
+    if user is None or not user.check_password(password):
+        return jsonify(success=False, message="Invalid Credentials"), 400
+
+    session['user_id'] = user.id
+
+    return jsonify(success=True, user=user.to_dict())
+
+@mod_user.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user_id')
+    return jsonify(success=True)
+
+@mod_user.route('/register', methods=['POST'])
+def create_user():
+    try:
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+    except KeyError as e:
+        return jsonify(success=False, message="%s not sent in the request" % e.args), 400
+
+    if '@' not in email:
+        return jsonify(success=False, message="Please enter a valid email"), 400
+
+    u = User(name, email, password)
+    db.session.add(u)
+    try:
+        db.session.commit()
+    except IntegrityError as e:
+        return jsonify(success=False, message="This email already exists"), 400
+
+    return jsonify(success=True)'''
+#+END_SRC
+
+
+
+
+
+** =math.py=:
+This file has the code which uses random and string module to
+generate the csrf token.
+
+*** Content:
+#+name: user_math
+#+BEGIN_SRC python
+import string,random
+from random import randint 
+def gene():
+	N=randint(32,128)
+	x = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(N))
+	print(x)
+	return x
+#+END_SRC
+
+
+
+	
+
+** =__init__.py=:
+This file has the code, no code. It just tells that the present directory
+is a module.
+
+*** Content:
+#+name: user_init
+#+BEGIN_SRC python
+
+#+END_SRC
+
+
+
+	
+
+
+* Login Folder
+** =models.py=:
+This file contains, sorry no databases here. Empty block.
+
+*** Content:
+#+name: login_models
+#+BEGIN_SRC python
+
+#+END_SRC
+
+
+    
+** =controllers.py=:
+This file contains all the routes for logging in and logging out, also
+has a route which shows whether the session has a logged in user or not,
+it returns true/false depending on the status of the user handling the
+session.
+
+*** Content:
+#+name: login_controllers
+#+BEGIN_SRC python
+from flask import *
+from app import *
+from app.user.models import *
+from flask_sqlalchemy import *
+from sqlalchemy import *
+
+mod_login = Blueprint('login', __name__)
+
+@mod_login.route('/login', methods=['POST'])
+def signin():
+	print('inside login')
+	try:
+		info=request.form['email']
+		token=request.form['token']
+		p=request.form['password']
+		print(session['csrf_token'])
+		print(token)
+		if str(session['csrf_token']) != str(token):
+			print('failed login')
+			return redirect('/home')
+	except KeyError as e:
+		return "Missing Credentials"
+	user=User.query.filter(or_(or_(User.username==info,User.email==info),User.mobile==info)).first()
+	if user is None or not user.check_password(p):
+		return "Invalid Credentials"
+	session['user_name'] = user.username
+	print(user)
+	return ""
+#	return render_template('dashboard.html',user=user)
+
+@mod_login.route('/logout', methods=['GET'])
+def signout():
+	print('in logout')
+	session.pop('user_name')
+	return ""
+
+@mod_login.route('/login', methods=['GET'])
+def check_login():
+	if 'user_name' in session:
+		return jsonify(success=True)
+	return jsonify(success=False), 401
+
+@mod_login.route('/login/<id>', methods=['GET'])
+@requires_auth
+def get_login(id):
+    user_id = session['user_id']
+    login = Todo.query.filter(Todo.id == id, Todo.user_id == user_id).first()
+    if login is None:
+        return jsonify(success=False), 404
+    else:
+        return jsonify(success=True, login=login.to_dict())
+
+@mod_login.route('/login/<id>', methods=['POST'])
+@requires_auth
+def edit_login(id):
+    user_id = session['user_id']
+    login = Todo.query.filter(Todo.id == id, Todo.user_id == user_id).first()
+    if login is None:
+        return jsonify(success=False), 404
+    else:
+        login.title = request.form['title']
+        login.text = request.form['text']
+        login.color = request.form['color']
+        db.session.commit()
+        return jsonify(success=True)
+
+@mod_login.route('/login/<id>/done', methods=['POST'])
+@requires_auth
+def mark_done(id):
+    user_id = session['user_id']
+    login = Todo.query.filter(Todo.id == id, Todo.user_id == user_id).first()
+    if login is None:
+        return jsonify(success=False), 404
+    else:
+        login.done = True
+        db.session.commit()
+        return jsonify(success=True)
+
+
+@mod_login.route('/login/<id>/delete', methods=['POST'])
+@requires_auth
+def delete_login(id):
+    user_id = session['user_id']
+    login = Todo.query.filter(Todo.id == id, Todo.user_id == user_id).first()
+    if login is None:
+        return jsonify(success=False), 404
+    else:
+        db.session.delete(login)
+        db.session.commit()
+        return jsonify(success=True)
+#+END_SRC
+
+
+
+
+
+** =__init__.py=:
+This file has the code, no code. It just tells that the present directory
+is a module.
+
+*** Content:
+#+name: login_init
+#+BEGIN_SRC python
+
+#+END_SRC
+
+
+
+	
+
+
+
+* Dashboard Folder
+** =models.py=:
+This file contains the database(table) for the transactions/events that
+are created. This has all the info regarding the simplyfied debts between
+every pair who is a part of the transaction and also has a status column which
+shows whether the status is settle up or not. It also has a foreign key with
+the transaction table's id.
+
+*** Content:
+#+name: dashboard_models
+#+BEGIN_SRC python
+from flask_sqlalchemy import *
+from app import db
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime as d
+from sqlalchemy import *
+from app.transaction.models import *
+
+class Pay(db.Model):
+	__tablename__='dashboard'
+	main_id=db.Column(db.Integer,primary_key=True)
+	t_id=db.Column(db.Integer,db.ForeignKey('transaction.tid'))
+	pay_to=db.Column(db.String,nullable=False)
+	pay_by=db.Column(db.String,nullable=False)
+	amount=db.Column(db.Float,nullable=False)
+	status=db.Column(db.Integer)
+
+	transaction = db.relationship(Transaction)
+	
+	def __init__(self, pay_to, pay_by, amount, trans_id):
+		self.pay_to=pay_to
+		self.pay_by=pay_by	
+		self.amount=amount
+		self.status=0
+		self.t_id=trans_id
+
+	def __repr__(self):
+		return "%s %s %s %s %d" %(self.amount, self.pay_to, self.pay_by, self.status, self.t_id)
+#+END_SRC
+
+
+
+** =controllers.py=:
+This file contains all the routes associated with the transactions,
+like settle up, delete route, show all the transactions where the status is
+0, i.e. the transaction isn't settled up. It also shows how many transactions are the in the database.
+And has various other helper routes which help in smoother and efficient
+working and functionality of the project. It has the most important route, which splits the
+entry in accordance with our efficient simplifying algorithm which reduces the number
+of cash flows between people.  
+
+*** Content:
+#+name: dashboard_controllers
+#+BEGIN_SRC python
+from flask import *
+from sqlalchemy.exc import IntegrityError
+from app import db
+from .models import *
+from app.user.models import *
+from app.transaction.models import *
+from app.dashboard.models import *
+from .maths import *
+from ast import literal_eval as json
+from datetime import datetime as dera
+
+mod_dashboard = Blueprint('dashboard', __name__)
+
+@mod_dashboard.route('/split',methods=['POST'])
+def split():
+	user=User.query.filter(session['user_name']==User.username).first()
+	contri=request.form['contributors']
+	expend=request.form['expenditors']
+	state=request.form['state']
+	description=request.form['description']
+	creator=session['user_name']
+	bill_amount=request.form['bill_amount']
+	payers,d = contri.split(",")[:-1],{}		
+	for i in payers:
+		x=i.split(':')		
+		d[x[0]]=x[1]
+		
+	stringd = str(d)
+	payees,e = expend.split(",")[:-1],{}		
+	for i in payees:
+		x=i.split(':')		
+		e[x[0]]=x[1]
+		
+	stringe = str(e)
+
+	date = dera.now().strftime("%d-%m-%Y-%H-%M-%S")
+	trans_id = Transaction(stringd,stringe,description,creator,bill_amount,date)
+#	print(trans_id.tid)
+	db.session.add(trans_id)
+	db.session.commit()
+#	values = trans_id.split(" ")
+	a = Transaction.query.filter(and_(Transaction.date==date,Transaction.creator==creator)).first()
+	print("hello"+str(a.tid))
+
+	ans=flow(str(contri),str(expend),str(state))
+#	print(ans)
+	for i in ans:
+		abcd=Pay(i['paid_to'],i['paid_by'],i['amount'],trans_id.tid)
+		db.session.add(abcd)
+		db.session.commit()
+
+	
+	data,curr={},{}
+	data[user.username],curr[user.username]=json(user.nettransaction),{}
+	userfriend=user.friends.split(',')[1:]
+	lis=[]
+#	print(userfriend)
+	for i in userfriend:
+#		print(i)
+		ab = User.query.filter(i==User.username).first()
+		data[i],curr[i]=json(ab.nettransaction),{}
+	for x in ans:
+#		print(x)
+		i,j,k=x['paid_by'],x['paid_to'],x['amount']
+		if i not in lis:lis+=[i]
+		if j not in lis:lis+=[j]
+		if j in data[i]:
+#			print(i ,j)
+#			print(data[i],data[j])
+			data[i][j]=float('%.2f'%data[i][j])+k
+			data[j][i]=float('%.2f'%data[j][i])-k
+#			data[i][j]+=k
+#			data[j][i]-=k
+		else:
+			data[i][j],data[j][i]=float('%.2f'%k),float('%.2f'%-k)
+		curr[i][j],curr[j][i]=k,-k
+	for x in lis:
+		name=User.query.filter(User.username==x).first()
+		curr[x]['date']=date
+		curr[x]['creator']=session['user_name']
+		name.history+=','+str(curr[x])
+		print(x, data[x], curr[x])
+		name.nettransaction=str(data[x])
+		db.session.commit()
+	print(ans)
+	db.session.commit()
+	return str(ans)
+
+@mod_dashboard.route('/checknet',methods=['GET'])
+def net():
+	x = User.query.all()
+	for i in x:
+		print(i.nettransaction)
+	return "done"
+
+
+#@mod_dashboard.route('/findpays/<tid>',methods=['GET'])
+def finding(tid):
+	data = Pay.query.filter(Pay.t_id==tid).all()
+	x = []
+	for i in data:
+		a={}
+		a['t_id']=i.t_id
+		a['pay_by']=i.pay_by
+		a['pay_to']=i.pay_to
+		a['amount']=i.amount
+		a['status']=i.status
+		x.append(a)
+	return x
+
+@mod_dashboard.route('/getusertranszero',methods=['GET'])
+def usertranszero():
+	y=[]
+	x=[]
+	data = Pay.query.filter(and_(or_(Pay.pay_to==session['user_name'],Pay.pay_by==session['user_name'])),Pay.status==0).all()
+	for i in data:
+		x.append(i.t_id)
+
+	x = list(set(x))
+	
+	for i in x:
+		y.append(finding(i))
+	
+	print(y)
+	return jsonify(y)
+
+@mod_dashboard.route('/getusertrans',methods=['GET'])
+def usertrans():
+	y=[]
+	x=[]
+	data = Pay.query.filter(or_(Pay.pay_to==session['user_name'],Pay.pay_by==session['user_name'])).all()
+	for i in data:
+		x.append(i.t_id)
+
+	x = list(set(x))
+	
+	for i in x:
+		y.append(finding(i))
+	
+	print(y)
+	return jsonify(y)
+
+@mod_dashboard.route('/settle',methods=['GET'])
+def settled():
+	x = []
+	data = Pay.query.filter(and_(or_(Pay.pay_to==session['user_name'],Pay.pay_by==session['user_name'])),Pay.status==0).all()
+	for i in data:
+		x.append(i.t_id)
+
+	x = list(set(x))
+
+	y=[]
+	for i in x:
+		h = Transaction.query.filter(Transaction.tid==i).first()
+		a={}
+		a['tid']=h.tid
+		a['bill_amount']=h.bill_amount
+		a['date']=h.date
+		a['creator']=h.creator
+		a['description']=h.description
+		y.append(a)
+	return jsonify(y)
+
+
+
+@mod_dashboard.route('/history',methods=['GET'])
+def history():
+	x=[]
+	data = Pay.query.filter(or_(Pay.pay_to==session['user_name'],Pay.pay_by==session['user_name'])).all()
+	for i in data:
+		x.append(i.t_id)
+
+	x = list(set(x))
+
+	y=[]
+	for i in x:
+		h = Transaction.query.filter(Transaction.tid==i).first()
+		a={}
+		a['tid']=h.tid
+		a['bill_amount']=h.bill_amount
+		a['date']=h.date
+		a['creator']=h.creator
+		a['description']=h.description
+		y.append(a)
+	return jsonify(y)
+		
+
+@mod_dashboard.route('/settleup',methods=['POST'])
+def tosettle():
+	t_id=request.form['tid']
+	pay_by=request.form['pay_by']
+	pay_to=request.form['pay_to']
+	data = Pay.query.filter(and_(and_(Pay.pay_to==pay_to,Pay.t_id==t_id)),Pay.pay_by==pay_by).first()
+	data.status = 1
+	byuser = User.query.filter(User.username==pay_by).first()
+	touser = User.query.filter(User.username==pay_to).first()
+	jsonby = json(byuser.nettransaction)
+	jsonto = json(touser.nettransaction)
+	jsonto[str(pay_by)]+=float(data.amount)
+	jsonby[str(pay_to)]-=float(data.amount)
+	byuser.nettransaction = str(jsonby)
+	touser.nettransaction = str(jsonto)
+#	data.amount=0
+	db.session.commit()
+	return "Done"
+
+@mod_dashboard.route('/deleteup',methods=['POST'])
+def todelete():
+	tid = request.form['tid']
+	data = Pay.query.filter(Pay.t_id==tid).all()
+	for i in data:
+		byuser = User.query.filter(User.username==i.pay_by).first()
+		touser = User.query.filter(User.username==i.pay_to).first()
+		jsonby = json(byuser.nettransaction)
+		jsonto = json(touser.nettransaction)
+		jsonto[str(i.pay_by)]+=float(i.amount)
+		jsonby[str(i.pay_to)]-=float(i.amount)
+		byuser.nettransaction = str(jsonby)
+		touser.nettransaction = str(jsonto)
+		db.session.delete(i)
+		db.session.commit()
+	data = Transaction.query.filter(Transaction.tid==tid).first()
+	db.session.delete(data)
+	db.session.commit()
+	return "Done"
+
+'''
+@mod_dashboard.route('/delete',methods=['GET'])
+def deletepay():
+	x = Pay.query.all()
+	for i in x:
+		db.session.delete(i)
+		db.session.commit()
+
+	x = Pay.query.all()
+	return jsonify(x)
+'''
+@mod_dashboard.route('/dashing',methods=['GET'])
+def dashing():
+	user=User.query.filter(User.username==session['user_name']).first()
+	recent=user.nettransaction
+	recent=json(recent)
+	return jsonify(recent)
+
+
+
+
+
+    
+'''@mod_dashboard.route('/seepay',methods=['POST'])
+def see_dashboard():
+	username=request.form["username"]
+	user=Pay.query.filter(or_(Pay.pay_to==username,Pay.pay_for==username))
+	a,b=[],{}
+	for i in user:
+		c={}
+		c['']
+	return jsonify(a)
+
+
+'''
+'''@mod_dashboard.route('/login', methods=['POST'])
+def login():
+#    try:
+#       email = request.form['email']
+#       password = request.form['password']
+    except KeyError as e:
+        return jsonify(success=False, message="%s not sent in the request" % e.args), 400
+
+    dashboard = User.query.filter(User.email == email).first()
+    if dashboard is None or not dashboard.check_password(password):
+        return jsonify(success=False, message="Invalid Credentials"), 400
+
+    session['dashboard_id'] = dashboard.id
+
+    return jsonify(success=True, dashboard=dashboard.to_dict())
+
+@mod_dashboard.route('/logout', methods=['POST'])
+def logout():
+    session.pop('dashboard_id')
+    return jsonify(success=True)
+
+@mod_dashboard.route('/register', methods=['POST'])
+def create_dashboard():
+    try:
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+    except KeyError as e:
+        return jsonify(success=False, message="%s not sent in the request" % e.args), 400
+
+    if '@' not in email:
+        return jsonify(success=False, message="Please enter a valid email"), 400
+
+    u = User(name, email, password)
+    db.session.add(u)
+    try:
+        db.session.commit()
+    except IntegrityError as e:
+        return jsonify(success=False, message="This email already exists"), 400
+
+    return jsonify(success=True)'''
+#+END_SRC
+
+
+
+
+
+** =maths.py=:
+This file contains the program which simplifies all the debts
+between the people, and is the core of the project. It can accept
+inputs in the form of shares, exact, equal, percentage wise or in
+itemized bill form. This program will handle all the different
+possibilities of the transaction.
+
+
+*** Content:
+#+name: dashboard_maths
+#+BEGIN_SRC python
+def flow(user,actual,inp):
+	print(user, actual, inp)
+	def val(x):return x[1]
+	def make(s): return list(map(lambda y:[y.split(':')[0],float(y.split(':')[1])],sorted(s.split(',')[:-1])))
+	def tot(x):return sum(map(val,x))
+	def fxn(x,y,i):
+		#if len(x)!=len(y):return "inv len"
+		#w=list(map(val,x+y))
+		#print(list(w),any(z<0 for z in w))
+		#print(list(w))
+		#print(list(w), [z==0 for z in w],all(z==0 for z in w))
+		#print(list(w))
+		#if any(x<0 for x in w) or all(x==0 for x in w):return "inv cons"
+		switch={
+			"0":[[z[0],tot(x)/len(x)] for z in x],
+			"1":y,# if tot(x)==tot(y) else "inv total",
+			"2":[[z[0],z[1]*tot(x)/tot(y)] for z in y], #if tot(y)==100.00 else "inv %",
+			"3":[[z[0],z[1]*tot(x)/tot(y)] for z in y]
+			}
+		return switch.get(i,"inv mode")
+	stuser=make(user)
+	stactx=make(actual)
+	stact=fxn(stuser,stactx,inp)
+	'''err={
+		"inv mode":" error mode wrng",	
+		"inv %":" error !=100",
+		"inv total":" error total!=total",
+		"inv len":" error len uneq",
+		"inv cons":" error invalid constraints"
+	}
+	check=err.get(str(stact),"pass")
+	if check!="pass":
+		return check'''
+	l,out=[[stuser[i][0],float('%.2f'%(stuser[i][1]-stact[i][1]))] for i in range(len(stuser))],[]
+	while True:
+		l=sorted(filter(lambda x:abs(x[1])>=0.01,l),key=val)
+		if not l:break
+		maxD,maxC=-l[0][1],l[-1][1]
+		D,C=l[0][0],l[-1][0]
+		trans=min(maxD,maxC)
+		boolD,boolC=trans==maxD,trans==maxC
+		if boolD and boolC:
+			del l[0]
+			del l[-1]
+		elif boolD:
+			l[-1][1]-=maxD
+			del l[0]
+		else:
+			l[0][1]+=maxC
+			del l[-1]
+		out+=[{"paid_by":D,"paid_to":C,"amount":trans}]
+	return out
+
+#print(flow("newbass:111,newbazz:0,", "newbazz:55.5,newbass:55.5,", "1"))
+#+END_SRC
+
+
+
+	
+
+** =__init__.py=:
+This file has the code, no code. It just tells that the present directory
+is a module.
+
+*** Content:
+#+name: dashboard_init
+#+BEGIN_SRC python
+
+#+END_SRC
+
+
+
+	
+
+
+
+* Transaction Folder
+** =models.py=:
+This file contains the database(table) for the events which are created using the
+add bill option. This has all the meta information regarding the event, like
+the  time stamp of the event and the bill amount and the description of the event;
+it also has the list of contributors and the expenditors along with 
+the amount they paid or the expended. This table is linked with the dashboard's
+model with the foreign key as the table's id.
+
+*** Content:
+#+name: transaction_models
+#+BEGIN_SRC python
+from flask_sqlalchemy import *
+from app import db
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime as d
+from sqlalchemy import *
+
+class Transaction(db.Model):
+	__tablename__='transaction'
+	tid=db.Column(db.Integer,primary_key=True)
+	pay_for=db.Column(db.String,nullable=False)
+	pay_by=db.Column(db.String,nullable=False)
+	description=db.Column(db.String,nullable=False)
+	bill_amount=db.Column(db.Float,nullable=False)
+	creator=db.Column(db.String,nullable=False)
+	date=db.Column(db.String)
+	
+	def __init__(self, pay_by, pay_for, description, creator, bill_amount, date):
+		self.pay_by=pay_by
+		self.pay_for=pay_for	
+		self.description=description
+		self.bill_amount=bill_amount
+		self.creator=creator
+		self.date=date
+
+	def __repr__(self):
+#		return "%d" %tid
+		return "%s %s" %(self.date, self.creator)
+#+END_SRC
+
+
+
+** =controllers.py=:
+Sorry, it has nothing, yes absolutely nothing.
+
+*** Content:
+#+name: transaction_controllers
+#+BEGIN_SRC python
+
+#+END_SRC
+
+
+
+
+
+** =__init__.py=:
+This file has the code, no code. It just tells that the present directory
+is a module.
+
+*** Content:
+#+name: transaction_init
+#+BEGIN_SRC python
+
+#+END_SRC
+
+
+
+	
+
+
+
+* Friends Folder
+** =controllers.py=:
+This file contains all the routes associated with the friends of the
+user. It has a route which adds a friend to the database of the user.
+It also has a route which returns all the friends of the user.
+
+*** Content:
+#+name: friends_controllers
+#+BEGIN_SRC python
+from flask import *
+from sqlalchemy.exc import *
+from app import db
+from app.user.models import *
+from sqlalchemy import *
+from ast import literal_eval as json
+
+mod_friend = Blueprint('friend', __name__)
+
+@mod_friend.route('/addFriend',methods=['POST'])
+def add_friend():
+	friend=request.form['friend']
+	user=User.query.filter(User.username==session['user_name']).first()
+	frnd=User.query.filter(or_(User.username==friend,User.email==friend)).first()
+	if user is not None and frnd is not None and user!=frnd:
+		user.friends+=','+frnd.username
+		frnd.friends+=','+user.username
+		x = json(user.nettransaction)
+		y = json(frnd.nettransaction)
+		if frnd.username not in x:
+			x[frnd.username] = 0
+		if user.username not in y:
+			y[user.username] = 0
+		user.nettransaction = str(x)	
+		frnd.nettransaction = str(y)	
+		db.session.commit()
+		return "Friend added successfully"
+	else:
+		return "Unsuccessful"
+
+@mod_friend.route('/friends',methods=['GET'])
+def friend():
+	user=User.query.filter(User.username==session['user_name']).first()
+	print(user.friends)
+	a=[]
+	p=user.friends[1:].split(',')
+	print(p)
+	return jsonify(p)
+	for i in p:
+		b={}
+		b['friend']=p
+		a.append(b)
+	return jsonify(a)
+
+		
+		
+#+END_SRC
+
+
+
+
+
+** =__init__.py=:
+This file has the code, no code. It just tells that the present directory
+is a module.
+
+*** Content:
+#+name: friends_init
+#+BEGIN_SRC python
+
+#+END_SRC
+
+
+
+	
+
+
+
+* Templates
+** =home.html=:
+This is the loading page which you will get for the first time you visit
+the / route.
+
+*** Content:
+#+name: home
+#+BEGIN_SRC html
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/home.css')}}">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>	
+</head>
+<body>
+	<div class="wrapper">
+	  <div class="image">
+            <div style="position:relative; text-align:center;">
+        	<h1 id="load" style="font-size:600%; position:fixed; left:40%; bottom: 25%; text-align:center">LOADING...</h1>
+            </div>
+	  </div>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='home.js') }}"></script>
+</body>
+</html>
+#+END_SRC
+
+
+** =homepage.html=:
+This is the page which you will get when you visit
+the /homepage route, after loading the user will be redirected
+here. Here the user has to register/login.
+
+*** Content:
+#+name: homepage
+#+BEGIN_SRC html
+<!DOCTYPE html>
+<html>
+<head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+	<link rel= "stylesheet" type= "text/css" href="{{ url_for('static', filename='styles/homepage.css')}}">
+	<style>
+		body{margin:0px 0px;padding:0px 0px; background-color:#f2f2f2;}
+	</style>
+</head>
+<body>
+	<div class="title" style="height:90px; width:100%; background-color:#24478f; margin-left:0px; margin-top:0px; float:left; position:relative;">
+	   <span id="name" style="margin-left:400px;font-weight:bold; top:15px; font-size:350%; color:#f2f2f2; position:relative;">
+		splitwise
+	   </span>
+		<input type="hidden" value="{{token}}" id="csrf_token"/>
+	   <table border="0" style="color:#f2f2f2; text-align:left; height:81px; width:25%; position:relative; right:300px; top:9px; float:right;">
+		<tr>
+		  <td>
+		    <label for="email">Email or Phone</label>
+		  </td>
+		  <td>
+		    <label for="pass">Password</label>
+		  </td>
+		</tr>
+		<tr>
+		  <td>
+		    <input type="email" class="inputtext" style="color:black;" name="email" id="email" value="" tabindex="1">
+		  </td>
+		  <td>
+		    <input type="password" class="inputtext" style="color:black;" name="pass" id="pass" tabindex="2">
+		  </td>
+		  <td>
+		    <input type="submit" class="inputtext" value="Log In" id="loginbutton" onclick="login()" style=" height:27px; border:none; background-color:#5c85d6" tabindex="4">
+		  </td>
+		</tr>
+		<tr>
+		  <td></td>
+		  <td>Forgot Password?</td>
+		  <td></td>
+		</tr>
+	   </table>
+	</div>
+
+	<div title="mainframe" style="width:100%; height:887px; float:left; background-color:red">
+		<div title="addForm" id="sideleft" style="width:56%; float:left; height:887px; background-color:#f2f2f2;">
+			<div class="text-wrapper">
+    				<div class="animated-words">
+    				    <span>Are you confused?</span>
+    				    <span>Or depressed?</span>
+    				    <span>Tired of exchanging money?</span>
+    				    <span>Easily fooled?</span>
+    				    <span>Use SplitWise...</span>
+    				    <span>Be MoneyWise!</span>
+   				 </div>    
+			</div>
+		<img src="../static/styles/despair.jpg" id="despair" title="splitwise" style="width:400px;margin-left:100px; margin-top:100px;" alt="join us!"/>
+		</div>
+		<div title="addForm" style="width:44%; float:right; height:887px; background-color:#c2d1f0;">
+			<h1 style="margin-left:60px">Join Us!</h1>
+			<h3 style="margin-left:60px">Be Smart. Be Wise.</h3>
+			<div id="fullname" style="margin-left:60px; margin-top:60px; margin-bottom:10px;">
+				<input type="text" name="firstname"id="formfirst" style="height:30px" placeholder="First Name" />			
+				<input type="text" name="lastname" id="formlast" style="height:30px" placeholder="Last Name" />	
+			</div>		
+			<div id="regdetail" style="margin-left:60px; margin-bottom:10px;">
+				<input type="text" name="phone" id="phoneform" style="height:30px" onblur="colorChange()" placeholder="Phone Number" />			
+				<input type="text" name="email" id="emailform" style="height:30px" onblur="splitEmail()" placeholder="Email Address" />	
+			</div>
+			<div id="userdetail" style="margin-left:60px; margin-bottom:10px;">
+				<input type="text" name="username" id="usernameform" style="width:352px;height:30px" onblur="check()" placeholder="What would you like to be called by? (Username)" />
+			</div>			
+			<div id="password" style="margin-left:60px; margin-bottom:10px;">
+				<input type="password" name="password" id="passwordform" style="width:352px;height:30px" onblur="checkLength()" placeholder="Keep it safe! (Enter Password)" />
+			</div>			
+			<div id="dateofbirth" style="margin-left:60px; margin-bottom:10px;">
+				<p style="color:#24478f">WHEN DO YOU BLOW CANDLES?</p>
+				<select name="DOBMonth" id="monthform" style="height:30px">
+					<option disabled> - Month - </option>
+					<option value="January">January</option>
+					<option value="Febuary">Febuary</option>
+					<option value="March">March</option>
+					<option value="April">April</option>
+					<option value="May">May</option>
+					<option value="June">June</option>
+					<option value="July">July</option>
+					<option value="August">August</option>
+					<option value="September">September</option>
+					<option value="October">October</option>
+					<option value="November">November</option>
+					<option value="December">December</option>
+				</select>
+
+				<select name="DOBDay" id="dateform" style="height:30px">
+					<option disabled> - Day - </option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+					<option value="13">13</option>
+					<option value="14">14</option>
+					<option value="15">15</option>
+					<option value="16">16</option>
+					<option value="17">17</option>
+					<option value="18">18</option>
+					<option value="19">19</option>
+					<option value="20">20</option>
+					<option value="21">21</option>
+					<option value="22">22</option>
+					<option value="23">23</option>
+					<option value="24">24</option>
+					<option value="25">25</option>
+					<option value="26">26</option>
+					<option value="27">27</option>
+					<option value="28">28</option>
+					<option value="29">29</option>
+					<option value="30">30</option>
+					<option value="31">31</option>
+				</select>
+
+				<select name="DOBYear" id="yearform" style="height:30px">
+					<option disabled> - Year - </option>
+					<option value="1998">1998</option>
+					<option value="1997">1997</option>
+					<option value="1996">1996</option>
+					<option value="1995">1995</option>
+					<option value="1994">1994</option>
+					<option value="1993">1993</option>
+					<option value="1992">1992</option>
+					<option value="1991">1991</option>
+					<option value="1990">1990</option>
+					<option value="1989">1989</option>
+					<option value="1988">1988</option>
+					<option value="1987">1987</option>
+					<option value="1986">1986</option>
+					<option value="1985">1985</option>
+					<option value="1984">1984</option>
+					<option value="1983">1983</option>
+					<option value="1982">1982</option>
+					<option value="1981">1981</option>
+					<option value="1980">1980</option>
+					<option value="1979">1979</option>
+					<option value="1978">1978</option>
+					<option value="1977">1977</option>
+					<option value="1976">1976</option>
+					<option value="1975">1975</option>
+					<option value="1974">1974</option>
+					<option value="1973">1973</option>
+					<option value="1972">1972</option>
+					<option value="1971">1971</option>
+					<option value="1970">1970</option>
+					<option value="1969">1969</option>
+					<option value="1968">1968</option>
+					<option value="1967">1967</option>
+					<option value="1966">1966</option>
+					<option value="1965">1965</option>
+					<option value="1964">1964</option>
+					<option value="1963">1963</option>
+					<option value="1962">1962</option>
+					<option value="1961">1961</option>
+					<option value="1960">1960</option>
+					<option value="1959">1959</option>
+					<option value="1958">1958</option>
+					<option value="1957">1957</option>
+					<option value="1956">1956</option>
+					<option value="1955">1955</option>
+					<option value="1954">1954</option>
+					<option value="1953">1953</option>
+					<option value="1952">1952</option>
+					<option value="1951">1951</option>
+					<option value="1950">1950</option>
+					<option value="1949">1949</option>
+					<option value="1948">1948</option>
+					<option value="1947">1947</option>
+	
+				</select>
+			</div>
+			<div id="gender" style="margin-left:60px; margin-bottom:10px;">
+				<p style="color:#24478f">BUT WE DON'T PROMOTE SEXISM!</p>
+				<input type="radio" name="gender" style="margin:3px" value="Female" />FEMALE &nbsp;&nbsp;&nbsp;			
+				<input type="radio" name="gender" style="margin:3px" value="Male" checked/>MALE
+			</div>
+			<div id="country" style="margin-left:60px; margin-bottom:10px;">
+				<p style="color:#24478f">LET'S KNOW YOUR NATIONALISM!</p>
+		<select name="country" id="countryform" style="height:30px; width:352px;">
+    <option value="Afghanistan">Afghanistan</option>
+    <option value="Albania">Albania</option>
+    <option value="Algeria">Algeria</option>
+    <option value="American Samoa">American Samoa</option>
+    <option value="Andorra">Andorra</option>
+    <option value="Angola">Angola</option>
+    <option value="Anguilla">Anguilla</option>
+    <option value="Antartica">Antarctica</option>
+    <option value="Antigua and Barbuda">Antigua and Barbuda</option>
+    <option value="Argentina">Argentina</option>
+    <option value="Armenia">Armenia</option>
+    <option value="Aruba">Aruba</option>
+    <option value="Australia">Australia</option>
+    <option value="Austria">Austria</option>
+    <option value="Azerbaijan">Azerbaijan</option>
+    <option value="Bahamas">Bahamas</option>
+    <option value="Bahrain">Bahrain</option>
+    <option value="Bangladesh">Bangladesh</option>
+    <option value="Barbados">Barbados</option>
+    <option value="Belarus">Belarus</option>
+    <option value="Belgium">Belgium</option>
+    <option value="Belize">Belize</option>
+    <option value="Benin">Benin</option>
+    <option value="Bermuda">Bermuda</option>
+    <option value="Bhutan">Bhutan</option>
+    <option value="Bolivia">Bolivia</option>
+    <option value="Bosnia and Herzegowina">Bosnia and Herzegowina</option>
+    <option value="Botswana">Botswana</option>
+    <option value="Bouvet Island">Bouvet Island</option>
+    <option value="Brazil">Brazil</option>
+    <option value="British Indian Ocean Territory">British Indian Ocean Territory</option>
+    <option value="Brunei Darussalam">Brunei Darussalam</option>
+    <option value="Bulgaria">Bulgaria</option>
+    <option value="Burkina Faso">Burkina Faso</option>
+    <option value="Burundi">Burundi</option>
+    <option value="Cambodia">Cambodia</option>
+    <option value="Cameroon">Cameroon</option>
+    <option value="Canada">Canada</option>
+    <option value="Cape Verde">Cape Verde</option>
+    <option value="Cayman Islands">Cayman Islands</option>
+    <option value="Central African Republic">Central African Republic</option>
+    <option value="Chad">Chad</option>
+    <option value="Chile">Chile</option>
+    <option value="China">China</option>
+    <option value="Christmas Island">Christmas Island</option>
+    <option value="Cocos Islands">Cocos (Keeling) Islands</option>
+    <option value="Colombia">Colombia</option>
+    <option value="Comoros">Comoros</option>
+    <option value="Congo">Congo</option>
+    <option value="Congo">Congo, the Democratic Republic of the</option>
+    <option value="Cook Islands">Cook Islands</option>
+    <option value="Costa Rica">Costa Rica</option>
+    <option value="Cota D'Ivoire">Cote d'Ivoire</option>
+    <option value="Croatia">Croatia (Hrvatska)</option>
+    <option value="Cuba">Cuba</option>
+    <option value="Cyprus">Cyprus</option>
+    <option value="Czech Republic">Czech Republic</option>
+    <option value="Denmark">Denmark</option>
+    <option value="Djibouti">Djibouti</option>
+    <option value="Dominica">Dominica</option>
+    <option value="Dominican Republic">Dominican Republic</option>
+    <option value="East Timor">East Timor</option>
+    <option value="Ecuador">Ecuador</option>
+    <option value="Egypt">Egypt</option>
+    <option value="El Salvador">El Salvador</option>
+    <option value="Equatorial Guinea">Equatorial Guinea</option>
+    <option value="Eritrea">Eritrea</option>
+    <option value="Estonia">Estonia</option>
+    <option value="Ethiopia">Ethiopia</option>
+    <option value="Falkland Islands">Falkland Islands (Malvinas)</option>
+    <option value="Faroe Islands">Faroe Islands</option>
+    <option value="Fiji">Fiji</option>
+    <option value="Finland">Finland</option>
+    <option value="France">France</option>
+    <option value="France Metropolitan">France, Metropolitan</option>
+    <option value="French Guiana">French Guiana</option>
+    <option value="French Polynesia">French Polynesia</option>
+    <option value="French Southern Territories">French Southern Territories</option>
+    <option value="Gabon">Gabon</option>
+    <option value="Gambia">Gambia</option>
+    <option value="Georgia">Georgia</option>
+    <option value="Germany">Germany</option>
+    <option value="Ghana">Ghana</option>
+    <option value="Gibraltar">Gibraltar</option>
+    <option value="Greece">Greece</option>
+    <option value="Greenland">Greenland</option>
+    <option value="Grenada">Grenada</option>
+    <option value="Guadeloupe">Guadeloupe</option>
+    <option value="Guam">Guam</option>
+    <option value="Guatemala">Guatemala</option>
+    <option value="Guinea">Guinea</option>
+    <option value="Guinea-Bissau">Guinea-Bissau</option>
+    <option value="Guyana">Guyana</option>
+    <option value="Haiti">Haiti</option>
+    <option value="Heard and McDonald Islands">Heard and Mc Donald Islands</option>
+    <option value="Holy See">Holy See (Vatican City State)</option>
+    <option value="Honduras">Honduras</option>
+    <option value="Hong Kong">Hong Kong</option>
+    <option value="Hungary">Hungary</option>
+    <option value="Iceland">Iceland</option>
+    <option value="India" selected>India</option>
+    <option value="Indonesia">Indonesia</option>
+    <option value="Iran">Iran (Islamic Republic of)</option>
+    <option value="Iraq">Iraq</option>
+    <option value="Ireland">Ireland</option>
+    <option value="Israel">Israel</option>
+    <option value="Italy">Italy</option>
+    <option value="Jamaica">Jamaica</option>
+    <option value="Japan">Japan</option>
+    <option value="Jordan">Jordan</option>
+    <option value="Kazakhstan">Kazakhstan</option>
+    <option value="Kenya">Kenya</option>
+    <option value="Kiribati">Kiribati</option>
+    <option value="Democratic People's Republic of Korea">Korea, Democratic People's Republic of</option>
+    <option value="Korea">Korea, Republic of</option>
+    <option value="Kuwait">Kuwait</option>
+    <option value="Kyrgyzstan">Kyrgyzstan</option>
+    <option value="Lao">Lao People's Democratic Republic</option>
+    <option value="Latvia">Latvia</option>
+    <option value="Lebanon">Lebanon</option>
+    <option value="Lesotho">Lesotho</option>
+    <option value="Liberia">Liberia</option>
+    <option value="Libyan Arab Jamahiriya">Libyan Arab Jamahiriya</option>
+    <option value="Liechtenstein">Liechtenstein</option>
+    <option value="Lithuania">Lithuania</option>
+    <option value="Luxembourg">Luxembourg</option>
+    <option value="Macau">Macau</option>
+    <option value="Macedonia">Macedonia, The Former Yugoslav Republic of</option>
+    <option value="Madagascar">Madagascar</option>
+    <option value="Malawi">Malawi</option>
+    <option value="Malaysia">Malaysia</option>
+    <option value="Maldives">Maldives</option>
+    <option value="Mali">Mali</option>
+    <option value="Malta">Malta</option>
+    <option value="Marshall Islands">Marshall Islands</option>
+    <option value="Martinique">Martinique</option>
+    <option value="Mauritania">Mauritania</option>
+    <option value="Mauritius">Mauritius</option>
+    <option value="Mayotte">Mayotte</option>
+    <option value="Mexico">Mexico</option>
+    <option value="Micronesia">Micronesia, Federated States of</option>
+    <option value="Moldova">Moldova, Republic of</option>
+    <option value="Monaco">Monaco</option>
+    <option value="Mongolia">Mongolia</option>
+    <option value="Montserrat">Montserrat</option>
+    <option value="Morocco">Morocco</option>
+    <option value="Mozambique">Mozambique</option>
+    <option value="Myanmar">Myanmar</option>
+    <option value="Namibia">Namibia</option>
+    <option value="Nauru">Nauru</option>
+    <option value="Nepal">Nepal</option>
+    <option value="Netherlands">Netherlands</option>
+    <option value="Netherlands Antilles">Netherlands Antilles</option>
+    <option value="New Caledonia">New Caledonia</option>
+    <option value="New Zealand">New Zealand</option>
+    <option value="Nicaragua">Nicaragua</option>
+    <option value="Niger">Niger</option>
+    <option value="Nigeria">Nigeria</option>
+    <option value="Niue">Niue</option>
+    <option value="Norfolk Island">Norfolk Island</option>
+    <option value="Northern Mariana Islands">Northern Mariana Islands</option>
+    <option value="Norway">Norway</option>
+    <option value="Oman">Oman</option>
+    <option value="Pakistan">Pakistan</option>
+    <option value="Palau">Palau</option>
+    <option value="Panama">Panama</option>
+    <option value="Papua New Guinea">Papua New Guinea</option>
+    <option value="Paraguay">Paraguay</option>
+    <option value="Peru">Peru</option>
+    <option value="Philippines">Philippines</option>
+    <option value="Pitcairn">Pitcairn</option>
+    <option value="Poland">Poland</option>
+    <option value="Portugal">Portugal</option>
+    <option value="Puerto Rico">Puerto Rico</option>
+    <option value="Qatar">Qatar</option>
+    <option value="Reunion">Reunion</option>
+    <option value="Romania">Romania</option>
+    <option value="Russia">Russian Federation</option>
+    <option value="Rwanda">Rwanda</option>
+    <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option> 
+    <option value="Saint LUCIA">Saint LUCIA</option>
+    <option value="Saint Vincent">Saint Vincent and the Grenadines</option>
+    <option value="Samoa">Samoa</option>
+    <option value="San Marino">San Marino</option>
+    <option value="Sao Tome and Principe">Sao Tome and Principe</option> 
+    <option value="Saudi Arabia">Saudi Arabia</option>
+    <option value="Senegal">Senegal</option>
+    <option value="Seychelles">Seychelles</option>
+    <option value="Sierra">Sierra Leone</option>
+    <option value="Singapore">Singapore</option>
+    <option value="Slovakia">Slovakia (Slovak Republic)</option>
+    <option value="Slovenia">Slovenia</option>
+    <option value="Solomon Islands">Solomon Islands</option>
+    <option value="Somalia">Somalia</option>
+    <option value="South Africa">South Africa</option>
+    <option value="South Georgia">South Georgia and the South Sandwich Islands</option>
+    <option value="Span">Spain</option>
+    <option value="SriLanka">Sri Lanka</option>
+    <option value="St. Helena">St. Helena</option>
+    <option value="St. Pierre and Miguelon">St. Pierre and Miquelon</option>
+    <option value="Sudan">Sudan</option>
+    <option value="Suriname">Suriname</option>
+    <option value="Svalbard">Svalbard and Jan Mayen Islands</option>
+    <option value="Swaziland">Swaziland</option>
+    <option value="Sweden">Sweden</option>
+    <option value="Switzerland">Switzerland</option>
+    <option value="Syria">Syrian Arab Republic</option>
+    <option value="Taiwan">Taiwan, Province of China</option>
+    <option value="Tajikistan">Tajikistan</option>
+    <option value="Tanzania">Tanzania, United Republic of</option>
+    <option value="Thailand">Thailand</option>
+    <option value="Togo">Togo</option>
+    <option value="Tokelau">Tokelau</option>
+    <option value="Tonga">Tonga</option>
+    <option value="Trinidad and Tobago">Trinidad and Tobago</option>
+    <option value="Tunisia">Tunisia</option>
+    <option value="Turkey">Turkey</option>
+    <option value="Turkmenistan">Turkmenistan</option>
+    <option value="Turks and Caicos">Turks and Caicos Islands</option>
+    <option value="Tuvalu">Tuvalu</option>
+    <option value="Uganda">Uganda</option>
+    <option value="Ukraine">Ukraine</option>
+    <option value="United Arab Emirates">United Arab Emirates</option>
+    <option value="United Kingdom">United Kingdom</option>
+    <option value="United States">United States</option>
+    <option value="United States Minor Outlying Islands">United States Minor Outlying Islands</option>
+    <option value="Uruguay">Uruguay</option>
+    <option value="Uzbekistan">Uzbekistan</option>
+    <option value="Vanuatu">Vanuatu</option>
+    <option value="Venezuela">Venezuela</option>
+    <option value="Vietnam">Viet Nam</option>
+    <option value="Virgin Islands (British)">Virgin Islands (British)</option>
+    <option value="Virgin Islands (U.S)">Virgin Islands (U.S.)</option>
+    <option value="Wallis and Futana Islands">Wallis and Futuna Islands</option>
+    <option value="Western Sahara">Western Sahara</option>
+    <option value="Yemen">Yemen</option>
+    <option value="Yugoslavia">Yugoslavia</option>
+    <option value="Zambia">Zambia</option>
+    <option value="Zimbabwe">Zimbabwe</option>
+</select>
+			</div>			
+			<div id="create" style="margin-left:60px; margin-bottom:10px;">
+		    		<input type="submit" value="Ready To Peek Into Wiser World?" id="createbutton" onclick="create()" style="height:27px; width:352px; color:#f2f2f2; border:none; background-color:#5c85d6" tabindex="4">
+			</div>
+			<div id="success" style="display:none">
+				<span class="glyphicon glyphicon-ok" style="color:green"></span>&nbsp;&nbsp;Congratulations! You have been registered.
+			</div>
+			<div id="failure" style="display:none">
+				<span class="glyphicon glyphicon-remove" style="color:red"></span>&nbsp;&nbsp;Oops. We are sorry. Please re-enter the form.
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="{{ url_for('static', filename='homepage.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='ajaxhome.js') }}"></script>
+</body>
+</html>
+#+END_SRC
+
+
+
+** =dashboard.html=:
+This is the page which you will get when the user
+successfully load in. This is the main activity page
+of the project.
+
+*** Content:
+#+name: dashboard
+#+BEGIN_SRC html
+<!DOCTYPE html>
+<html>
+<head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>  
+	<link rel= "stylesheet" type= "text/css" href="{{ url_for('static', filename='styles/dashboard.css')}}">
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <style>
+                body{margin:0px 0px;padding:0px 0px; background-color:#f2f2f2;}
+        </style>
+</head>
+<body onload="dashload()">
+        <div class="title" style="height:60px; width:100%; background-color:#24478f; margin-left:0px; margin-top:0px; float:left; position:relative;">
+	   <span id="name" style="margin-left:300px; top:5px; font-size:250%; color:#f2f2f2; position:relative;">
+                S P L I T W I S E
+           </span>
+	   <ul class="nav pull-right">
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }}
+				<b class="caret"></b>
+			</a>
+			<ul class="dropdown-menu pull-right">
+   			 <li><a href="/account/settings">Your account</a></li>
+   			 <li><a href="/groups/new">Create a group</a></li>
+			 <li><a onclick="logout()">Log out</a></li>
+  			</ul>
+		</li>
+	   </ul>
+	</div>
+	<div class="center_container">
+	    <div id="left_sidebar">
+		<div id="view_links">
+			<br />
+			<br />
+			<br />
+			<br />
+			<a id="dashboard_link" class="open" onclick="dashload()">
+				<span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;Dashboard
+			</a>
+			<a id="notification_link" onclick="recentactivity()">
+				<span class="glyphicon glyphicon-flag"></span>&nbsp;&nbsp;Recent Activity
+			</a>
+			<a id="allnotification_link" onclick="allexpenses()">
+				<span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;All Expenses
+			</a>
+			<br />
+			<br />
+			<br />
+			<br />
+			<a onclick="addfriend()" id="addfriend_link">
+				<span class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;Add Friend
+			</a>
+			<div id="add_friend" style="display:none;">
+			    <div id="inner_friend">
+				<fieldset>
+		    		<label for="email" style="font-size:130%">Email or Username</label>
+				<br />
+		    		<input type="email" class="input" style="color:black;" name="addemail" id="addemail" value="" tabindex="1" />
+				<br />
+		    		<input type="button" class="input" value="Add" id="addbutton" onclick="add()" style=" height:27px; border:none; background-color:#5c85d6; color:#f2f2f2; float:right; margin-top:3%; margin-right:14%" tabindex="4">
+				</fieldset>
+				<br />
+				<br />
+			   </div>
+			</div>
+			<a href="/addgroup" id="addgroup_link">
+				<span class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;Create Group
+			</a>
+		</div>
+	    </div>
+	    <div id="center_column">
+		<div class="dashboard header" id="dash">
+		    <div class="topbar">
+			<h1>Dashboard</h1>
+			<div class="actions">
+			   <a class="btn btn-large btn-orange" onclick="addbill()">
+				Add a bill
+				</a>
+			   <a class="btn btn-large btn-theme" onclick="settle()">
+				Settle Up
+				</a>
+			</div>
+		    </div>
+		</div>
+
+		<div id="bill">
+		    <div id="inside_bill">
+			<h1>Add A Bill</h1>
+		    </div>
+		</div>
+
+		<div id="settleup">
+			<div id="inside_settle">
+				<h1>Settle Up</h1>
+			</div>
+		</div>
+
+		<div id="recentact">
+			<div id="inside_recent">
+				<h1>Recent Activity</h1>
+			</div>
+		</div>
+
+		<div id="allexpense">
+			<div id="inside_all">
+				<h1>All Expenses</h1>
+			</div>
+		</div>
+
+		<div id="dashboard_content">
+		    <div id="settle_message">
+			<h1>Congrat's you are settled up!</h1><h1>Awesome...</h1>
+		    </div>
+		    <div id="nettran" style="display:none;">
+			<table id="nettable" style="width:100%;">
+				<tbody id="netbody">
+				</tbody>
+			</table>
+		    </div>
+		</div>
+
+		<div id="settleup_content" style="display:none;">
+			<table id="settletable" style="width:100%;">
+				<tbody id="settlebody">
+				</tbody>
+			</table>
+		</div>
+
+		<div id="allactive_content" style="display:none;">
+			<table id="alltable" style="width:100%;">
+				<tbody id = "allbody">
+				</tbody>
+			</table>
+		</div>
+
+		<div id="recentactive_content" style="display:none;">
+			<table id="recenttable" style="width:100%;">
+				<tbody id = "recentbody">
+				</tbody>
+			</table>
+		</div>
+
+		<div id="addbill_content" style="display:none;">
+		  <div id="adding">
+		    <div class="ui-widget">
+		    <div id="addfriend">
+			<h2>Add Friends You Share Bill With</h2><br /><br />
+			<input type="text" name="username" class="user" style="font-size:27px;" id="username1" onblur="duplicate()" onkeypress="autocom()" placeholder="Enter Username"/><br />
+		    </div>
+		    </div>
+		    <div id="addmorebutton">
+			<a id="addmore" onclick="addmore()">Add more</a>			
+		    </div>
+		    <div id="savefriends"><input type="button" id="submit" value="Save" onclick="makelist()"/></div>
+		 
+		   </div>
+		   <div id="meta_add" style="display:none;">
+		    <table id="add_table">
+			<tr>
+				<td style="font-size:27px;">Description:</td>
+				<td><textarea id="description" placeholder="Something about your bill" rows="4" cols="20"></textarea></td>
+			</tr>
+			<tr>
+				<td style="font-size:27px;">Amount:</td>
+				<td><input type="text" id="totalamount" placeholder="Enter bill amount" /></td>
+			</tr>
+		    </table>
+		    <div><input type="button" id="headhi" value="Continue" onclick="extra()"/></div>
+		   </div>		       
+		    <div id="status">
+				We assume, it's paid by <a id="you" onclick="single()">you</a> and it's split <a id="equally" onclick="equal()">equally</a>.<br />
+				<input class="btn btn-large btn-orange" id="plain" type="button" value="Done" onclick="youequaldata()" />
+				<h2 style="text-align:center;">OR</h2>
+		    		<br />If payee also includes some of your friends, click <a id="multiple" onclick="multiple()">multiple</a>.
+		    		<br />If expense isn't split equally among you, click <a id="unequally" onclick="unequal()">unequally</a>.
+		    </div>
+		      <div id="mainforms">	
+			<div id="payeeform" style="float:left;">
+				<h1 style="margin-bottom:20px;">Multiple People</h1><br />
+				<span id="errorinpayee" style="color:red;display:none">Amount of the bill doesn't equal total amount above. Please check again and submit.</span>
+			</div>
+		    	
+			<div id="expenseform" style="float:right">
+				<div id="inline_button"><button id="equal" onclick="equalform()" class="active" data-toggle="tooltip" data-placement="bottom" title="Split Equally">=</button><button id="exact" onclick="exactform()" data-toggle="tooltip" data-placement="top" title="Split By Exact Amount">1.23</button><button id="percentage" onclick="percentform()" data-toggle="tooltip" data-placement="top" title="Split By Percentage">%</button><button id="share" onclick="shareform()" data-toggle="tooltip" data-placement="top" title="Split By Share"><span class="glyphicon glyphicon-tasks" style="vertical-align:middle;height:34px;margin-top:5px;"></span></button><button id="itemize" onclick="itemizedbill()" data-toggle="tooltip" data-placement="top" title="Itemized Bill"><span class="glyphicon glyphicon-list" style="vertical-align:middle;height:34px;margin-top:5px;"></span></button>
+
+				</div>
+				<div id="splitequal" style="display:none">
+					<h1>Split Equally</h1><br />
+					<div id="equalbor">
+						<div id="equaldetailleft" style="float:left"></div>
+						<div id="equaldetailright" style="float:right"></div>
+					</div>
+					<div style="margin-right:40%;"><input type="button" id="equalbutton" value="Done" class="btn btn-large btn-orange" onclick="submitequal()"/></div>
+				</div>
+				<div id="splitexact" style="display:none">
+					<h1>Split By Exact Amount</h1><br />
+					<div id="exactdetail">
+						<div id="exactdetailleft" style="display:inline-block;float:left;"></div>
+						<div id="exactdetailright" style="display:inline-block;float:right;"></div>
+					</div>
+					<br />
+					<div class="exacttotal" style="height:100px;">
+						<div style="display:inline-block;float:left;">
+							<strong style="font-size:25px;">TOTAL</strong>
+						</div>
+						<div class="exactsubtotal" style="display:inline-block;float:right;width:60px;margin-right:50px;">
+							<span id="exactowed_total" style="font-size:20px;text-align:right;"></span>
+							<br />
+							<span id="exactowed_remaining" style="font-size:15px;color:#808080;text-align:right;"></span>
+						</div>
+					</div>
+					<input type="button" id="exactbutton" value="Done" class="btn btn-large btn-orange" onclick="submitexact()"/>
+					<span id="exacterror" style="color:red;display:none;">Input contribution's don't total up to bill amount. Please check again and submit.</span>
+				</div>
+				<div id="splitpercent" style="display:none">
+					<h1>Split By Percentage</h1><br />
+					<div id="percentdetail">
+						<div id="percentdetailleft" style="display:inline-block;float:left"></div>
+						<div id="percentdetailright" style="display:inline-block;float:right"></div>
+					</div>
+					<div class="percenttotal" style="height:100px;">
+						<div style="display:inline-block;float:left;">
+							<strong style="font-size:25px;">TOTAL</strong>
+						</div>
+						<div class="percentsubtotal" style="display:inline-block;float:right;width:60px;margin-right:50px;">
+							<span id="percentowed_total" style="font-size:20px;text-align:right;"></span>
+							<br />
+							<span id="percentowed_remaining" style="font-size:15px;color:#808080;text-align:right;"></span>
+						</div>
+					</div>
+					<input type="button" id="percentbutton" value="Done" class="btn btn-large btn-orange" onclick="submitpercent()"/>
+					<span id="percenterror" style="color:red;display:none">Input contribution's don't total up to 100%. Please check again and submit.</span>
+				</div>
+				<div id="splitshare" style="display:none">
+					<h1>Split By Share</h1><br />
+					<div id="sharedetail">
+						<div id="sharedetailleft" style="float:left"></div>
+						<div id="sharedetailright" style="float:right"></div>
+					</div>
+					<div style="float:left;"><input type="button" id="sharebutton" class="btn btn-large btn-orange" value="Done" onclick="submitshare()"/></div>
+				</div>
+				<div id="itemizedbill" style="display:none">
+					<h1>Itemized Bill</h1><br />
+					<div id="erroritem" style="color:red;display:none">
+						Please recheck your entries again. It seems you have made an error. Thank You!
+					</div>
+					<div id="itemizetable">					
+						<table id="itemtable" border="1">
+							<tbody id="tablehead"></tbody>
+							<tbody id="tablebody"></tbody>
+						</table>	
+						<table id="extratable" border="1">
+							<tbody id="tableextra"></tbody>
+						</table>	
+						<table id="lefttable" border="1">
+							<tbody id="tableleft"></tbody>
+						</table>	
+					</div>
+					<br />
+					<input type="button" class="btn btn-large btn-orange" id="itembutton" value="Done" onclick="submititem()"/>
+				</div>
+		    	</div>
+		    </div>
+		</div>
+	     </div>
+	</div>
+	<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+	<script src="{{ url_for('static', filename='ajaxdash.js') }}"></script>
+</body>
+</html>
+#+END_SRC
+
+
+* Static
+** =home.js=:
+This file has the route which requests homepage route.
+
+*** Content:
+#+name: js_home
+#+BEGIN_SRC js
+$(document).ready(function()
+{
+	setTimeout
+		(function(){
+		console.log('hello');
+		window.location = "http://127.0.0.1:5000/home";
+//		$.get("/home",function(response){document.write(response);});
+//		$.ajax({
+//			url: '127.0.0.1:5000/homepage',
+//			method: 'GET',
+//			data: {},
+//			success:function(response){document.write(response);}
+//			});
+	},7000);
+});
+#+END_SRC
+
+
+** =ajaxhome.js=:
+This file has the route which requests registration and login of the user.
+
+*** Content:
+#+name: js_ajaxhome
+#+BEGIN_SRC js
+var create = function(){
+var firstname = $('#formfirst').val();
+var lastname = $('#formlast').val();
+var phone = $('#phoneform').val();
+var email = $('#emailform').val();
+var username = $('#usernameform').val();
+var password = $('#passwordform').val();
+console.log(firstname);
+var country = document.getElementById('countryform');
+var counval = country.options[country.selectedIndex].text;
+var date = document.getElementById('dateform');
+var dateval = date.options[date.selectedIndex].text;
+var month = document.getElementById('monthform');
+var monthval = month.options[month.selectedIndex].text;
+var year = document.getElementById('yearform');
+var yearval = year.options[year.selectedIndex].text;
+var gender = $("input:radio[name=gender]:checked").val();
+var suc = document.getElementById('success');
+var fai = document.getElementById('failure');
+var token = document.getElementById('csrf_token').value;
+console.log(token);
+	$.ajax({
+		url:'http://127.0.0.1:5000/addUser',
+		method:'POST',
+		data:{first_name:firstname,last_name:lastname,username:username,password:password,gender:gender,country:counval,mobile:phone,email:email,date:dateval,month:monthval,year:yearval,token:token},
+		success:function(response)
+		{
+			suc.style.display="block";
+			setTimeout(function(){suc.style.display="none";window.location="http://127.0.0.1:5000/home"},10000);
+		},
+		error:function(response)
+		{
+			console.log(response);
+			fai.style.display="block";
+			setTimeout(function(){fai.style.display="none";window.location="http://127.0.0.1:5000/home"},5000);
+		},
+});};
+
+var login = function(){
+var email = $('#email').val();
+var pass = $('#pass').val();
+var token = document.getElementById('csrf_token').value;
+console.log(token);
+console.log('inside ajax');
+	$.ajax({
+		url:"http://127.0.0.1:5000/login",
+		method:"POST",
+		data:{email:email,password:pass,token:token},
+		success:function(response)
+			{
+				console.log('success');
+				window.location = "http://127.0.0.1:5000/dash";
+	//			document.write(response);
+			},
+		error:function(response){},
+});};
+#+END_SRC
+
+
+
+** =homepage.js=:
+This file has the functions which manages the registrations and the logins,
+it validates at back end whether the username exists, validation of email ids,
+mobile number, etc.
+
+
+*** Content:
+#+name: js_homepage
+#+BEGIN_SRC js
+	setTimeout
+		(function(){
+			document.getElementById("despair").style.visibility="hidden";
+			$("#sideleft").css("background-image","url('/static/styles/bluelogo.jpg')");
+			document.getElementById("sideleft").style.backgroundSize = "100%";
+			document.getElementById("sideleft").style.backgroundRepeat = "no-repeat";
+			document.getElementById("sideleft").style.backgroundColor = "white";
+//			document.getElementsByTagName("body").style.backgroundColor = "white";
+	},19000);
+
+function isNum(str) {
+        return /^[0-9]+$/.test(str);
+}
+
+var colorChange = function()
+{
+	var phone = document.getElementById('phoneform').value;
+	
+	if(!isNum(document.getElementById('phoneform').value))
+    	{
+	    if(phone.length==0)return;
+	    document.getElementById('phoneform').style.border = "2px solid red";
+	    document.getElementById('phoneform').value = null;
+    	}
+	else
+	{
+	    document.getElementById('phoneform').style.border = "2px solid green";
+	}
+}
+
+var splitEmail = function()
+{
+	var email = document.getElementById('emailform').value;
+	var domain = email.split('@');
+	if(domain.length==2 && domain[1].split('.').length>=2)
+	{
+	    document.getElementById('emailform').style.border = "2px solid green";
+	}
+	else
+	{
+	    document.getElementById('emailform').style.border = "2px solid red";
+	    document.getElementById('emailform').value = null;
+	}
+	return;
+}
+
+var check = function()
+{
+	var username = document.getElementById('usernameform').value;
+	if(username==null||username==""||username==undefined||username.split(" ").length>=2)
+	{
+		document.getElementById('usernameform').style.border = "2px solid red";
+		document.getElementById('usernameform').value = null;
+		return;
+	}
+	console.log('inside');
+	$.ajax({
+		url: 'http://127.0.0.1:5000/user',
+		method: 'POST',
+		data: {user:username},
+		success:function(response)
+			{
+				if(response=="True")
+	    			{
+					document.getElementById('usernameform').style.border = "2px solid green";
+				}
+				else
+				{
+	    				document.getElementById('usernameform').style.border = "2px solid red";
+	    				document.getElementById('usernameform').value = null;
+				}
+			},
+		error:function(response)
+			{
+				console.log('error');
+	    			document.getElementById('usernameform').style.border = "2px solid red";
+	    			document.getElementById('usernameform').value = null;
+			}
+		});
+}
+
+var checkLength = function()
+{
+	var password = document.getElementById('passwordform').value;
+	if(password.length<=8)
+	{
+	    	document.getElementById('passwordform').style.border = "2px solid red";
+	    	document.getElementById('passwordform').value = null;
+	    	$('#passwordform').attr("placeholder","Use More Characters");
+	}
+	else
+	{
+	    	document.getElementById('passwordform').style.border = "2px solid green";
+	}
+
+}
+#+END_SRC
+
+
+
+** =dashboard.js=:
+This file has the all the functions of the dashboard which manages the display of different
+blocks in the page. It manages just every functionality of the project excluding the requests.
+
+*** Content:
+#+name: js_dashboard
+#+BEGIN_SRC js
+var count=1;
+var flag=0;
+var usernames=[];
+var myname = "";
+var dash={}
+var you = 1;
+var mysettle=[];
+var mytrans=[];
+var paysineach = [];
+var paysinzero = [];
+var myhistory=[];
+$.get('http://127.0.0.1:5000/friends',function(response){usernames = response;console.log(usernames);})
+$.get('http://127.0.0.1:5000/user',function(response){myname = response;console.log(myname);})
+$.get('http://127.0.0.1:5000/dashing',function(response){dash=response;console.log(dash);}).done(function(){dashload();})
+$.get('http://127.0.0.1:5000/settle',function(response){mysettle=response;console.log(mysettle);})
+$.get('http://127.0.0.1:5000/getusertrans',function(response){paysineach=response;console.log(paysineach);})
+$.get('http://127.0.0.1:5000/getusertranszero',function(response){paysinzero=response;console.log(paysinzero);})
+$.get('http://127.0.0.1:5000/history',function(response){myhistory=response;console.log("hellohist", myhistory);})
+
+var passto = function()
+{
+$.get('http://127.0.0.1:5000/friends',function(response){usernames = response;console.log(usernames);})
+$.get('http://127.0.0.1:5000/settle',function(response){mysettle=response;console.log(mysettle);})
+$.get('http://127.0.0.1:5000/getusertrans',function(response){paysineach=response;console.log(paysineach);})
+$.get('http://127.0.0.1:5000/getusertranszero',function(response){paysinzero=response;console.log(paysinzero);})
+$.get('http://127.0.0.1:5000/history',function(response){myhistory=response;console.log("hellohist", myhistory);})
+}
+
+var list=[];
+var month={'01':'Jan','02':'Feb','03':'Mar','04':'Apr','05':'May','06':'Jun','07':'Jul','08':'Aug','09':'Sep','10':'Oct','11':'Nov','12':'Dec'}
+var flageq=0;
+var flagex=0;
+var flagpc=0;
+var flagsh=0;
+var flagit=0;
+var total_amount=0;
+
+function isEmpty( obj ) { 
+   for ( var prop in obj ) { 
+      return false; 
+   } 
+   return true; 
+}
+
+var data = {};
+var autocom = function(){$(function(){
+    $(".user").autocomplete({
+      source: usernames
+    });
+  });};
+
+$(function(){
+    $('[data-toggle="tooltip"]').tooltip({placement:top}); 
+});
+
+//$.get('http://127.0.0.1:5000/friends',function(response){usernames=response;});
+
+var dashload = function()
+{
+	$.get('http://127.0.0.1:5000/dashing',function(response){dash=response;console.log(dash);}).done(function(data){dashboardload();})
+}
+
+var settleuptable = function()
+{
+	document.getElementById('settleup_content').style.display = "block";
+	document.getElementById('allactive_content').style.display = "none";
+	document.getElementById('recentactive_content').style.display = "none";
+	var setbody = document.getElementById('settlebody');
+	var temp = setbody.childElementCount;
+	for(i=0;i<temp;i++)
+		setbody.deleteRow(0);
+	for(i=0;i<mysettle.length;i++)
+	{
+	        var row = document.createElement('tr');
+                row.setAttribute('style','border-top:1px solid black;');
+                row.setAttribute('class','dark');
+                row.setAttribute('id',"closea-"+mysettle[i]['tid']);
+                row.addEventListener('click',showchild2);
+                var desc = document.createElement('td');
+                desc.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+                desc.innerHTML = mysettle[i]['description'];
+                row.appendChild(desc);
+
+                var by = document.createElement('td');
+                by.setAttribute('style','text-align:center;vertical-align:middle;font-size:17px;');
+                by.innerHTML = "Created by "+mysettle[i]['creator'];
+                row.appendChild(by);
+
+                var time = document.createElement('td');
+                time.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+                var date = mysettle[i]['date'];
+                date = date.split('-');
+                time.innerHTML = date[0]+" "+month[date[1]]+"'"+date[2].slice(2);
+
+                var span = document.createElement('span');
+                span.setAttribute('style','text-align:center;vertical-align:middle;font-size:15px;');
+                if(parseFloat(date[3])<12)
+                        span.innerHTML = date[3]+":"+date[4]+"AM";
+                else if(parseFloat(date[3])==12)
+                        span.innerHTML = date[3]+":"+date[4]+"PM";
+                else
+                        span.innerHTML = String(parseFloat(date[3])-12)+":"+date[4]+"PM";
+
+
+                time.appendChild(span);
+                row.appendChild(time);
+
+                var billamt = document.createElement('td');
+                billamt.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+                billamt.innerHTML = "Bill( "+mysettle[i]['bill_amount']+" )";
+
+                row.appendChild(billamt);
+
+                var billa = document.createElement('td');
+                row.appendChild(billa);
+		
+                setbody.appendChild(row);
+
+
+                console.log("loop start");
+                for(j=0;j<paysinzero[i].length;j++){
+
+                if(paysinzero[i][j]['status']==0){
+                var nrow = document.createElement('tr');
+                nrow.setAttribute('style','border-bottom:1px solid black;display:none');
+                nrow.setAttribute('id',"childa"+String(paysinzero[i][j]['t_id']));
+                nrow.setAttribute('class','light');
+
+                var from = document.createElement('td');
+                from.innerHTML = paysinzero[i][j]['pay_by'];
+                from.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+                nrow.appendChild(from);
+
+                var arr = document.createElement('td');
+                arr.setAttribute('style','text-align:center;vertical-align:middle;font-size:17px;');
+                var ic = document.createElement('span');
+                ic.setAttribute('class','glyphicon glyphicon-hand-right');
+                ic.setAttribute('style','color:#7094db');
+                arr.appendChild(ic);
+                nrow.appendChild(arr);
+
+                var to = document.createElement('td');
+                to.innerHTML = paysinzero[i][j]['pay_to'];
+                to.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+                nrow.appendChild(to);
+
+                var amt = document.createElement('td');
+                amt.innerHTML = paysinzero[i][j]['amount'];
+                amt.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+                nrow.appendChild(amt);
+
+		var sett = document.createElement('td');
+		if(paysinzero[i][j]['pay_by']==myname||paysinzero[i][j]['pay_to']==myname){
+                var ic = document.createElement('span');
+                ic.setAttribute('class','glyphicon glyphicon-thumbs-up');
+                ic.setAttribute('id',mysettle[i]['tid']+" "+paysinzero[i][j]['pay_by']+" "+paysinzero[i][j]['pay_to']);
+                ic.addEventListener('click',clickfunc);
+                ic.setAttribute('style','margin-left:20px;vertical-align:middle;font-size:130%;color:green;');
+                sett.appendChild(ic);}
+
+                nrow.appendChild(sett);
+
+                setbody.appendChild(nrow);
+		}}
+	}
+}
+
+var showchild = function()
+{
+	x = this.id;
+	w = x.split('-');
+	console.log(w[0]);
+	console.log(w[1]);
+	if(String(w[0])=="close")
+	{
+		a = document.querySelectorAll("#child"+String(w[1]));
+		console.log(a);
+		for(i=0;i<a.length;i++)
+		{a[i].style.display="";}
+
+		var q = document.getElementById('close-'+w[1]);
+		q.setAttribute('id','open-'+w[1]);
+	}
+	else
+	{
+		a = document.querySelectorAll("#child"+String(w[1]));
+		console.log(a);
+		for(i=0;i<a.length;i++)
+		{a[i].style.display="none";}
+
+		var q = document.getElementById('open-'+w[1]);
+		q.setAttribute('id','close-'+w[1]);
+	}
+}
+
+var showchild2 = function()
+{
+	x = this.id;
+	w = x.split('-');
+	console.log(w[0]);
+	console.log(w[1]);
+	if(String(w[0])=="closea")
+	{
+		a = document.querySelectorAll("#childa"+String(w[1]));
+		console.log(a);
+		for(i=0;i<a.length;i++)
+		{a[i].style.display="";}
+
+		var q = document.getElementById('closea-'+w[1]);
+		q.setAttribute('id','opena-'+w[1]);
+	}
+	else
+	{
+		a = document.querySelectorAll("#childa"+String(w[1]));
+		console.log(a);
+		for(i=0;i<a.length;i++)
+		{a[i].style.display="none";}
+
+		var q = document.getElementById('opena-'+w[1]);
+		q.setAttribute('id','closea-'+w[1]);
+	}
+}
+
+var showchild1 = function()
+{
+	x = this.id;
+	w = x.split('-');
+	console.log(w[0]);
+	console.log(w[1]);
+	if(String(w[0])=="closeabc")
+	{
+		a = document.querySelectorAll("#childabc"+String(w[1]));
+		console.log(a);
+		for(i=0;i<a.length;i++)
+		{a[i].style.display="";}
+
+		var q = document.getElementById('closeabc-'+w[1]);
+		q.setAttribute('id','openabc-'+w[1]);
+	}
+	else
+	{
+		a = document.querySelectorAll("#childabc"+String(w[1]));
+		console.log(a);
+		for(i=0;i<a.length;i++)
+		{a[i].style.display="none";}
+
+		var q = document.getElementById('openabc-'+w[1]);
+		q.setAttribute('id','closeabc-'+w[1]);
+	}
+}
+
+function clickfunc()
+{
+	a = this.id.split(' ');
+	console.log(a[0],a[1],a[2])
+//	alert(a[0],a[1],a[2]);
+	settleprocess(a[0],a[1],a[2]);
+}
+
+function deletfunc()
+{
+	a = this.id;
+	console.log('in delete');
+//	alert(a[0]);
+	deleteprocess(a[0]);
+}
+
+var settleprocess = function(tid,pay_by,pay_to)
+{
+	$.ajax({
+		url:'http://127.0.0.1:5000/settleup',
+		method:'POST',
+		data:{tid:tid,pay_by:pay_by,pay_to:pay_to,},
+		success:function(){passto();dashload();},		
+	});
+}
+
+var deleteprocess = function(tid)
+{
+	$.ajax({
+		url:'http://127.0.0.1:5000/deleteup',
+		method:'POST',
+		data:{tid:tid,},
+		success:function(){passto();dashload();},		
+	});
+}
+
+var allexpensestable = function()
+{
+	document.getElementById('allactive_content').style.display = "block";
+	document.getElementById('settleup_content').style.display = "none";
+	document.getElementById('recentactive_content').style.display = "none";
+	var allbody1 = document.getElementById('allbody');
+//	allbody1.style.border = "1px solid black";
+	var temp = allbody1.childElementCount;
+	for(i=0;i<temp;i++)
+		allbody1.deleteRow(0);
+
+	for(i=myhistory.length-1;i>=0;i--)
+	{
+		var row = document.createElement('tr');
+		row.setAttribute('style','border-top:1px solid black;');
+		row.setAttribute('id',"close-"+myhistory[i]['tid']);
+		row.setAttribute('class','dark');
+		row.addEventListener('click',showchild);
+		var desc = document.createElement('td');
+		desc.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+		desc.innerHTML = myhistory[i]['description'];
+		row.appendChild(desc);
+
+		var by = document.createElement('td');
+		by.setAttribute('style','text-align:center;vertical-align:middle;font-size:17px;');
+		by.innerHTML = "Created by "+myhistory[i]['creator'];
+		row.appendChild(by);
+
+		var time = document.createElement('td');
+		time.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+		var date = myhistory[i]['date'];
+		date = date.split('-');
+		time.innerHTML = date[0]+" "+month[date[1]]+"'"+date[2].slice(2);
+		
+		var span = document.createElement('span');
+		span.setAttribute('style','text-align:center;vertical-align:middle;font-size:15px;');
+		if(parseFloat(date[3])<12)
+			span.innerHTML = date[3]+":"+date[4]+"AM";
+		else if(parseFloat(date[3])==12)
+			span.innerHTML = date[3]+":"+date[4]+"PM";
+		else
+			span.innerHTML = String(parseFloat(date[3])-12)+":"+date[4]+"PM";
+		
+	
+		time.appendChild(span);
+		row.appendChild(time);
+
+		var billamt = document.createElement('td');
+		billamt.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+		billamt.innerHTML = "Bill( "+myhistory[i]['bill_amount']+" )";
+		row.appendChild(billamt);
+
+		var dela = document.createElement('td');
+		if(myhistory[i]['creator']==myname)
+		{
+			var delet = document.createElement('span');
+			delet.setAttribute('class','glyphicon glyphicon-trash');
+			delet.setAttribute('style','vertical-align:middle;margin-left:40px;color:red;font-size:95%;');
+			delet.setAttribute('id',myhistory[i]['tid']);
+			delet.addEventListener('click',deletfunc);
+			dela.appendChild(delet);
+		}	
+		row.appendChild(dela);
+		allbody1.appendChild(row);
+
+
+		console.log("loop start");	
+		for(j=0;j<paysineach[i].length;j++){
+		
+		var nrow = document.createElement('tr');
+		nrow.setAttribute('style','border-bottom:1px solid black;display:none');
+		nrow.setAttribute('id',"child"+String(paysineach[i][j]['t_id']));
+		nrow.setAttribute('class','light');
+		
+		var from = document.createElement('td');
+		from.innerHTML = paysineach[i][j]['pay_by'];
+		from.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+		nrow.appendChild(from);
+
+		var arr = document.createElement('td');
+		arr.setAttribute('style','text-align:center;vertical-align:middle;font-size:17px;');
+		var ic = document.createElement('span');				
+		ic.setAttribute('class','glyphicon glyphicon-hand-right');
+		ic.setAttribute('style','color:#7094db');
+		arr.appendChild(ic);
+		nrow.appendChild(arr);
+		
+		var to = document.createElement('td');
+		to.innerHTML = paysineach[i][j]['pay_to'];
+		to.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+		nrow.appendChild(to);
+		
+		var amt = document.createElement('td');
+		amt.innerHTML = paysineach[i][j]['amount'];
+		amt.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+		nrow.appendChild(amt);
+
+		var stat = document.createElement('td');
+		var ic = document.createElement('span');
+		if(paysineach[i][j]['status']==1){				
+		ic.setAttribute('class','glyphicon glyphicon-thumbs-up');
+		ic.setAttribute('style','margin-left:40px;vertical-align:middle;font-size:140%;color:green;');}
+		
+		else
+		{ic.setAttribute('class','glyphicon glyphicon-thumbs-down');
+		ic.setAttribute('style','margin-left:40px;vertical-align:middle;font-size:140%;color:red;');}
+		stat.appendChild(ic);
+		nrow.appendChild(stat);
+
+		allbody1.appendChild(nrow);
+		
+		}
+	}
+}
+
+var recentexpensestable = function()
+{
+	document.getElementById('recentactive_content').style.display = "block";
+	document.getElementById('settleup_content').style.display = "none";
+	document.getElementById('allactive_content').style.display = "none";
+	var recentbody1 = document.getElementById('recentbody');
+	var temp = recentbody1.childElementCount;
+	for(i=0;i<temp;i++)
+		recentbody1.deleteRow(0);
+
+	for(i=myhistory.length-1; i>=0 && i>myhistory.length-6 ;i--)
+	{
+	        var row = document.createElement('tr');
+                row.setAttribute('style','border-top:1px solid black;');
+                row.setAttribute('id',"closeabc-"+myhistory[i]['tid']);
+		row.setAttribute('class','dark');
+                row.addEventListener('click',showchild1);
+                var desc = document.createElement('td');
+                desc.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+                desc.innerHTML = myhistory[i]['description'];
+                row.appendChild(desc);
+
+                var by = document.createElement('td');
+                by.setAttribute('style','text-align:center;vertical-align:middle;font-size:17px;');
+                by.innerHTML = "Created by "+myhistory[i]['creator'];
+                row.appendChild(by);
+
+                var time = document.createElement('td');
+                time.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+                var date = myhistory[i]['date'];
+                date = date.split('-');
+                time.innerHTML = date[0]+" "+month[date[1]]+"'"+date[2].slice(2);
+
+                var span = document.createElement('span');
+                span.setAttribute('style','text-align:center;vertical-align:middle;font-size:15px;');
+                if(parseFloat(date[3])<12)
+                        span.innerHTML = date[3]+":"+date[4]+"AM";
+                else if(parseFloat(date[3])==12)
+                        span.innerHTML = date[3]+":"+date[4]+"PM";
+                else
+                        span.innerHTML = String(parseFloat(date[3])-12)+":"+date[4]+"PM";
+
+
+                time.appendChild(span);
+                row.appendChild(time);
+
+                var billamt = document.createElement('td');
+                billamt.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+                billamt.innerHTML = "Bill( "+myhistory[i]['bill_amount']+" )";
+                row.appendChild(billamt);
+
+		var bila = document.createElement('td');
+                if(myhistory[i]['creator']==myname)
+                {
+                        var delet = document.createElement('span');
+                        delet.setAttribute('class','glyphicon glyphicon-trash');
+                        delet.setAttribute('id',myhistory[i]['tid']);
+                        delet.setAttribute('style','margin-left:40px;color:red;font-size:95%;');
+                        delet.addEventListener('click',deletfunc);
+                        bila.appendChild(delet);
+                }
+                row.appendChild(bila);
+                recentbody1.appendChild(row);
+
+
+                for(j=0;j<paysineach[i].length;j++){
+
+                var nrow = document.createElement('tr');
+                nrow.setAttribute('style','border-bottom:1px solid black;display:none;');
+                nrow.setAttribute('id',"childabc"+String(paysineach[i][j]['t_id']));
+		nrow.setAttribute('class','light');
+
+                var from = document.createElement('td');
+                from.innerHTML = paysineach[i][j]['pay_by'];
+                from.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+                nrow.appendChild(from);
+
+                var arr = document.createElement('td');
+                arr.setAttribute('style','text-align:center;vertical-align:middle;font-size:17px;');
+                var ic = document.createElement('span');
+                ic.setAttribute('class','glyphicon glyphicon-hand-right');
+                ic.setAttribute('style','color:#7094db');
+                arr.appendChild(ic);
+                nrow.appendChild(arr);
+
+                var to = document.createElement('td');
+                to.innerHTML = paysineach[i][j]['pay_to'];
+                to.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+                nrow.appendChild(to);
+
+                var amt = document.createElement('td');
+                amt.innerHTML = paysineach[i][j]['amount'];
+                amt.setAttribute('style','text-align:center;vertical-align:middle;font-size:25px;');
+                nrow.appendChild(amt);
+
+		var stat = document.createElement('td');
+                var ic = document.createElement('span');
+                if(paysineach[i][j]['status']==1){
+                ic.setAttribute('class','glyphicon glyphicon-thumbs-up');
+                ic.setAttribute('style','margin-left:40px;vertical-align:middle;font-size:140%;color:green;');}
+
+                else
+                {ic.setAttribute('class','glyphicon glyphicon-thumbs-down');
+                ic.setAttribute('style','margin-left:40px;vertical-align:middle;font-size:140%;color:red;');}
+		stat.appendChild(ic);
+                nrow.appendChild(stat);
+                recentbody1.appendChild(nrow);
+		}
+	}
+}
+
+var dashboardload = function()
+{
+	document.getElementById('dash').style.display='block';
+	document.getElementById('dashboard_content').style.display='block';
+	document.getElementById('recentact').style.display='none';
+	document.getElementById('allexpense').style.display='none';
+	document.getElementById('allactive_content').style.display='none';
+	document.getElementById('recentactive_content').style.display = "none";
+	document.getElementById('bill').style.display='none';
+	document.getElementById('addbill_content').style.display='none';
+	document.getElementById('settleup').style.display='none';
+	document.getElementById('settleup_content').style.display='none';
+	var nebody = document.getElementById('netbody');
+	var temp = nebody.childElementCount;
+	for(i=0;i<temp;i++)
+		nebody.deleteRow(0);
+	tempflag=0;
+	for(i=0;i<usernames.length;i++)
+	{
+		if(dash[usernames[i]]){console.log(dash[usernames[i]]);tempflag=1;break;}
+	}
+	if(tempflag==0){
+		document.getElementById('settle_message').style.display = "block";
+		document.getElementById('nettran').style.display = "none";}
+	
+	else
+	{
+		console.log('in dash load');
+		document.getElementById('settle_message').style.display = "none";
+		document.getElementById('nettran').style.display = "block";
+		var dashbo = document.getElementById('netbody');
+		for(i=0;i<dashbo.childNodes;i++)
+			dashbo.deleteRow(i);
+	
+		var tablecount=0;
+
+		for(i=0;i<usernames.length;i++)
+		{
+			if(dash[usernames[i]])
+			{
+				console.log(dash[usernames[i]]);
+				var row = document.createElement('tr');
+				
+				var data = document.createElement('td');
+				data.setAttribute('style','text-align:center;vertical-align:middle;font-size:27px;');
+				if(dash[usernames[i]]>0)
+				data.innerHTML = myname;
+
+				else
+				data.innerHTML = usernames[i];
+
+				row.appendChild(data);
+				var arr = document.createElement('td');
+				arr.setAttribute('style','text-align:center;vertical-align:middle;font-size:27px;');
+				var ic = document.createElement('span');				
+				ic.setAttribute('class','glyphicon glyphicon-hand-right');
+				arr.appendChild(ic);
+				row.appendChild(arr);
+
+				var to = document.createElement('td');
+				to.setAttribute('style','text-align:center;vertical-align:middle;font-size:27px;');
+				if(dash[usernames[i]]>0)
+				to.innerHTML = usernames[i];
+
+				else
+				to.innerHTML = myname;
+				row.appendChild(to);
+
+				var amt = document.createElement('td');
+				amt.setAttribute('style','text-align:center;vertical-align:middle;font-size:27px;');
+				if(dash[usernames[i]]<0)amt.innerHTML = -dash[usernames[i]];
+				else amt.innerHTML = dash[usernames[i]];
+				row.appendChild(amt);
+				dashbo.appendChild(row);
+			}
+		}
+	}
+}
+
+$('#dashboard_link').on('click',function()
+				{
+					$('a').removeClass('open');
+					$('#dashboard_link').addClass('open');
+					document.getElementById('dashboard_link').style.textDecoration = "none";
+				});
+
+$('#notification_link').on('click',function()
+				{
+					$('a').removeClass('open');
+					$('#notification_link').addClass('open');
+					document.getElementById('notification_link').style.textDecoration = "none";
+				});
+
+$('#allnotification_link').on('click',function()
+				{
+					$('a').removeClass('open');
+					$('#allnotification_link').addClass('open');
+					document.getElementById('allnotification_link').style.textDecoration = "none";
+				});
+
+var duplicate = function()
+{
+	var i = 0;
+	var check = document.getElementById("username"+String(count));
+	for(i=1;i<count;i++)
+	{
+		var tobe = document.getElementById("username"+String(i)).value;
+		if(check.value==tobe)
+		{
+			check.value=null;
+			$('#username'+String(count)).attr('placeholder','Enter New Name');
+		}
+	}
+}
+
+var logout = function()
+{
+	console.log('where am i');
+	$.get('/logout',function(response){console.log(response);window.location="http://127.0.0.1:5000/home";});
+}
+
+var addfriend = function()
+{
+	console.log('friend add');
+	document.getElementById('add_friend').style.display="block";	
+}
+
+var add = function()
+{
+	console.log('to be added');
+	email = document.getElementById('addemail').value;
+	$.ajax({
+		url:'http://127.0.0.1:5000/addFriend',
+		method:'POST',
+		data:{friend:email},
+		success:function(response)
+			{
+				console.log(response);
+				if(response=="Unsuccessful")
+				{
+					console.log('tohola');
+					document.getElementById('addemail').setAttribute('placeholder','Wrong Entry');
+				}
+				document.getElementById('addemail').value=null;
+				console.log('hola');
+				passto();
+			},
+		});
+}
+
+var addbill = function()
+{
+	console.log('addBill');
+	
+/*	$.ajax({
+		url:'http://127.0.0.1:5000/bill',
+		method:'GET',
+		data:{},
+		success:function(response)
+			{
+				console.log('vanish');
+				document.getElementById('dash').style.display='none';
+				document.getElementById('bill').style.display='block';
+			},
+		});*/
+	document.getElementById('dash').style.display='none';
+	document.getElementById('dashboard_content').style.display='none';
+	document.getElementById('recentact').style.display='none';
+	document.getElementById('allexpense').style.display='none';
+	document.getElementById('bill').style.display='block';
+	document.getElementById('addbill_content').style.display='block';
+}
+
+var settle = function()
+{
+	console.log('settling');
+	document.getElementById('dash').style.display='none';
+	document.getElementById('dashboard_content').style.display='none';
+	document.getElementById('recentact').style.display='none';
+	document.getElementById('allexpense').style.display='none';
+	document.getElementById('bill').style.display='none';
+	document.getElementById('addbill_content').style.display='none';
+	document.getElementById('settleup').style.display='block';
+
+	settleuptable();
+}
+
+var recentactivity = function()
+{
+	console.log('recent');
+	document.getElementById('dash').style.display='none';
+	document.getElementById('dashboard_content').style.display='none';
+	document.getElementById('recentact').style.display='block';
+	document.getElementById('allexpense').style.display='none';
+	document.getElementById('bill').style.display='none';
+	document.getElementById('addbill_content').style.display='none';
+	document.getElementById('settleup').style.display='none';
+
+	recentexpensestable();	
+}
+
+var allexpenses = function()
+{
+	console.log('allexpense');
+	document.getElementById('dash').style.display='none';
+	document.getElementById('dashboard_content').style.display='none';
+	document.getElementById('recentact').style.display='none';
+	document.getElementById('allexpense').style.display='block';
+	document.getElementById('bill').style.display='none';
+	document.getElementById('addbill_content').style.display='none';
+	document.getElementById('settleup').style.display='none';
+
+	allexpensestable();
+}
+
+/*
+var exists = function()
+{
+	console.log('inside');
+	var username = $(this).val();
+	var id = $(this).attr('id');
+	$.ajax({
+		url: 'http://127.0.0.1:5000/user',
+		method: 'POST',
+		data: {user:username},
+		success:function(response)
+			{
+				if(response=="False")
+	    			{document.getElementById(String(id)).style.border = "2px solid green";}
+				else
+				{
+	    				document.getElementById(String(id)).style.border = "2px solid red";
+	    				document.getElementById(String(id)).value = null;
+				}
+			},
+		error:function(response)
+			{
+				console.log('error');
+	    			document.getElementById('usernameform').style.border = "2px solid red";
+	    			document.getElementById('usernameform').value = null;
+			}
+		});
+*/
+
+var extra = function()
+{
+	if(document.getElementById('description').value!="")
+	{data['description'] = document.getElementById('description').value;}
+	
+	else
+	{$('#description').attr('placeholder','Empty Field Not Allowed');return;}
+
+	
+	if(isNaN(document.getElementById('totalamount').value))
+	{
+		document.getElementById('totalamount').value=null;
+		$('#totalamount').attr('placeholder','Re-enter');
+		return;
+	}
+	else if(document.getElementById('totalamount').value!="")
+	{data['total_amount'] = document.getElementById('totalamount').value;}
+	else
+	{$('#totalamount').attr('placeholder','Empty Field Not Allowed');return;}
+	document.getElementById('meta_add').style.display = "none";	
+	document.getElementById('status').style.display = "block";
+	total_amount = data['total_amount'];	
+}
+
+var makelist = function()
+{
+	var i = 0;
+	var x = count;
+	for(i=1;i<=x;i++)
+	{
+		if(document.getElementById('username'+String(i)).value==undefined)count--;
+		else if(document.getElementById('username'+String(i)).value=="")count--;
+	}
+	console.log(count);
+	for(i=1;i<=count;i++)
+	{
+		if(document.getElementById('username'+String(i)).value!=undefined)
+		list.push(document.getElementById('username'+String(i)).value);
+	
+		else count--;
+	}
+//	list.push(/*Enter Username*/);
+	list.push(myname);
+//	count++;
+	count++;	
+	console.log(list);
+	document.getElementById('adding').style.display = "none";
+	document.getElementById('meta_add').style.display = "block";
+}
+
+var addmore = function(){
+	var check = document.getElementById("username"+String(count));
+	console.log(check.value);
+	if(check.value=="")
+	{
+		console.log('1');
+		check.value=null;
+		$('#username'+String(count)).attr('placeholder','Enter Here First');
+		return;
+	}
+	count++;
+	var input = document.createElement('input');
+	input.setAttribute('type','text');
+	input.setAttribute('id','username'+String(count));
+	input.setAttribute('name','username');
+	input.setAttribute('class','user');
+	input.setAttribute('onblur','duplicate()');
+	input.setAttribute('onkeypress','autocom()');
+	input.setAttribute('placeholder','Enter Username');
+	var div = document.getElementById('addfriend');
+	div.appendChild(input);
+	var stl = document.getElementById('username'+String(count));
+	stl.style.fontSize = '27px';
+	var linebreak = document.createElement('br');
+	div.appendChild(linebreak);
+}
+
+var multiple = function()
+{
+	you = 0;
+	var div = document.getElementById('payeeform');
+	if(document.getElementById('itemizedbill').style.display="block")
+	{document.getElementById('itemizedbill').style.display="none";}
+	div.style.display = "inline"; 
+	if(flag==0){
+	for(var i = 0 ; i < list.length ; i++)
+	{
+		var input = document.createElement('input');	
+		input.setAttribute('type','text');
+		input.setAttribute('id','multiple'+String(i));
+		input.setAttribute('placeholder',String(list[i])+"'s Contribution");
+		div.appendChild(input);
+		var d = document.getElementById('multiple'+String(i));
+		d.style.width = '300px';
+		d.style.height = '28px';
+		d.style.fontSize = '23px';
+		d.style.marginBottom = '15px';
+		d.style.marginRight = '40px';
+	
+		var linebreak = document.createElement('br');
+		div.appendChild(linebreak);
+	}}
+	flag=1;
+}
+
+var single = function()
+{
+	you = 1;
+	var div = document.getElementById('payeeform');
+	div.style.display = "none"; 
+}
+
+var equal = function()
+{
+	var div = document.getElementById('expenseform');
+	div.style.display = "none";
+} 
+
+var unequal = function()
+{
+	var div = document.getElementById('expenseform');
+	div.style.display = "inline"; 
+	$('button').addClass('active');
+	$('#equal').removeClass('active');
+	document.getElementById('expenseform').style.width="40%";
+	document.getElementById('splitequal').style.display="none";
+	document.getElementById('splitexact').style.display="none";
+	document.getElementById('splitpercent').style.display="none";
+	document.getElementById('splitshare').style.display="none";
+	document.getElementById('itemizedbill').style.display="none";
+	document.getElementById('splitequal').style.display="block";
+	document.getElementById('equalbutton').style.marginTop=String(45*count)+'px';
+	document.getElementById('equalbutton').style.float="left";
+	var totalstr = data['total_amount'];
+	console.log(totalstr);
+	total = parseFloat(totalstr).toFixed( 2 );
+	var equal = total/count;
+	divleft = document.getElementById('equaldetailleft');
+	divright = document.getElementById('equaldetailright');
+	if(flageq==0){
+	console.log(count);
+	for(i=1;i<=count;i++)	
+	{
+		var label = document.createElement('label');	
+		label.setAttribute('for','username');
+		label.setAttribute('id','labelequal'+String(i));
+		label.innerHTML = String(list[i-1]);
+		divleft.appendChild(label);
+		var linebreak = document.createElement('br');
+		divleft.appendChild(linebreak);
+		var lbl = document.getElementById('labelequal'+String(i));
+		lbl.style.fontSize = '27px';
+		var input = document.createElement('input');	
+		input.setAttribute('type','text');
+		input.setAttribute('class','usrequal');
+		input.setAttribute('id','userequal'+String(i));
+		console.log(equal.toFixed( 2 ))
+		input.setAttribute('value',equal.toFixed( 2 ));
+		divright.appendChild(input);
+		var linebreak = document.createElement('br');
+		divright.appendChild(linebreak);
+		var update = document.getElementById('userequal'+String(i));
+		update.readOnly = true;
+		update.style.width = '70px';
+		update.style.marginBottom = '15px';
+		update.style.marginRight = '40px';
+		total=total-equal;
+		equal = (total)/(count-i);
+	}
+	flageq=1;}
+	return;
+}
+
+var equalform = function()
+{
+	$('button').addClass('active');
+	$('#equal').removeClass('active');
+	var totalstr = data['total_amount'];
+	total = parseFloat(totalstr).toFixed( 2 );
+	var equal = total/count;
+	document.getElementById('expenseform').style.width="40%";
+	document.getElementById('splitequal').style.display="none";
+	document.getElementById('splitexact').style.display="none";
+	document.getElementById('splitpercent').style.display="none";
+	document.getElementById('splitshare').style.display="none";
+	document.getElementById('itemizedbill').style.display="none";
+	document.getElementById('splitequal').style.display="block";
+	document.getElementById('equalbutton').style.marginTop=String(45*count)+'px';
+	document.getElementById('equalbutton').style.float="left";
+	divleft = document.getElementById('equaldetailleft');
+	divright = document.getElementById('equaldetailright');
+	if(flageq==0){
+	for(i=1;i<=count;i++)	
+	{
+		var label = document.createElement('label');	
+		label.setAttribute('for','username');
+		label.setAttribute('id','labelequal'+String(i));
+		label.innerHTML = String(list[i-1]);
+		divleft.appendChild(label);
+
+		var linebreak = document.createElement('br');
+		divleft.appendChild(linebreak);
+
+		var lbl = document.getElementById('labelequal'+String(i));
+		lbl.style.fontSize = '27px';
+		
+		var input = document.createElement('input');	
+		input.setAttribute('type','text');
+		input.setAttribute('class','usrequal');
+		input.setAttribute('id','userequal'+String(i));
+		console.log(equal.toFixed( 2 ))
+		input.setAttribute('value',equal.toFixed( 2 ));
+		divright.appendChild(input);
+	
+		var linebreak = document.createElement('br');
+		divright.appendChild(linebreak);
+
+		var update = document.getElementById('userequal'+String(i));
+		update.readOnly = true;
+		update.style.width = '70px';
+		update.style.marginBottom = '15px';
+		update.style.marginRight = '40px';
+		total = total-equal;
+		equal = (total)/(count-i);
+	}}
+	return;
+}
+
+var shareform = function()
+{
+	$('button').addClass('active');
+	$('#share').removeClass('active');
+	document.getElementById('expenseform').style.width="40%";
+	document.getElementById('splitequal').style.display="none";
+	document.getElementById('splitexact').style.display="none";
+	document.getElementById('splitpercent').style.display="none";
+	document.getElementById('splitshare').style.display="none";
+	document.getElementById('itemizedbill').style.display="none";
+	document.getElementById('splitshare').style.display="block";
+	document.getElementById('sharebutton').style.marginTop=String(53*count)+'px';
+	divleft = document.getElementById('sharedetailleft');
+	divright = document.getElementById('sharedetailright');
+	if(flagsh==0){
+	for(i=1;i<=count;i++)	
+	{
+		console.log(list[i-1]);
+		var label = document.createElement('label');	
+		label.setAttribute('for','username');
+		label.setAttribute('id','labelshare'+String(i));
+		label.innerHTML = String(list[i-1]);
+		divleft.appendChild(label);
+		
+		var linebreak = document.createElement('br');
+		divleft.appendChild(linebreak);
+		
+		var lbl = document.getElementById('labelshare'+String(i));
+		lbl.style.fontSize = '27px';
+		
+		var input = document.createElement('input');	
+		input.setAttribute('type','text');
+//		input.setAttribute('onkeyup','checkpercent()');
+		input.setAttribute('class','usrshare');
+		input.setAttribute('id','usershare'+String(i));
+		input.setAttribute('value',0);
+		divright.appendChild(input);
+		
+		var update = document.getElementById('usershare'+String(i));
+		update.style.width = '40px';
+		update.style.marginBottom = '15px';
+		var span = document.createElement('span');	
+		span.setAttribute('id','add-on'+String(i));
+		span.innerHTML = 'share(s)';
+		divright.appendChild(span);
+		var y = document.getElementById('add-on'+String(i));
+		y.style.fontSize = '22px';
+		y.style.marginRight = '20px';
+
+		var linebreak = document.createElement('br');
+		divright.appendChild(linebreak);
+	}flagsh=1;}
+	return;
+}
+
+var checkexact = function()
+{
+	console.log('inside');
+	var totalstr = data['total_amount'];
+	total = parseFloat(totalstr);
+	var subval=0;
+	for(i=1;i<=count;i++)
+	{
+		var inp = document.getElementById('userexact'+String(i));
+		if(isNaN(inp.value)){inp.value="";}
+		else{
+		var val = parseFloat(inp.value);
+		if(inp.value=="")val=0.00;
+		console.log(val);
+		
+		if(val>total){inp.value=total;}
+		
+		if(subval+val>total){inp.value = (total-subval);subval=total;}
+		else{subval+=val;}
+
+		var left = document.getElementById('exactowed_remaining');
+		left.innerHTML = (total-subval).toFixed( 2 )+' left';}		
+	}
+	return;
+}
+
+var exactform = function()
+{
+	$('button').addClass('active');
+	$('#exact').removeClass('active');
+	var totalstr = data['total_amount'];
+	total = parseFloat(totalstr);
+	document.getElementById('expenseform').style.width="40%";
+	document.getElementById('splitequal').style.display="none";
+	document.getElementById('splitexact').style.display="none";
+	document.getElementById('splitpercent').style.display="none";
+	document.getElementById('splitshare').style.display="none";
+	document.getElementById('itemizedbill').style.display="none";
+	document.getElementById('splitexact').style.display="block";
+	divleft = document.getElementById('exactdetailleft');
+	divright = document.getElementById('exactdetailright');
+	if(flagex==0){
+	for(i=1;i<=count;i++)	
+	{
+		var label = document.createElement('label');	
+		label.setAttribute('for','username');
+		label.setAttribute('id','labelexact'+String(i));
+		label.innerHTML = String(list[i-1]);
+		divleft.appendChild(label);
+		
+		var linebreak = document.createElement('br');
+		divleft.appendChild(linebreak);
+		
+		var lbl = document.getElementById('labelexact'+String(i));
+		lbl.style.fontSize = '27px';
+		
+		var input = document.createElement('input');	
+		input.setAttribute('type','text');
+		input.setAttribute('onkeyup','checkexact()');
+		input.setAttribute('class','usrexact');
+		input.setAttribute('id','userexact'+String(i));
+		input.setAttribute('value',0.00);
+		divright.appendChild(input);
+		
+		var update = document.getElementById('userexact'+String(i));
+		update.style.width = '70px';
+		update.style.marginBottom = '15px';
+		update.style.marginRight = '40px';
+		
+		var linebreak = document.createElement('br');
+		divright.appendChild(linebreak);
+	}
+	var x = document.getElementById('exactdetail');
+	x.style.marginBottom = String(count*43)+'px';
+	var tot = document.getElementById('exactowed_total');
+	tot.innerHTML = total.toFixed( 2 );
+	var rem = document.getElementById('exactowed_remaining');
+	rem.innerHTML = total.toFixed( 2 )+' left';
+	flagex=1;
+	}
+}
+
+var percentform = function()
+{
+	$('button').addClass('active');
+	$('#percentage').removeClass('active');
+	document.getElementById('expenseform').style.width="40%";
+	document.getElementById('splitequal').style.display="none";
+	document.getElementById('splitexact').style.display="none";
+	document.getElementById('splitpercent').style.display="none";
+	document.getElementById('splitshare').style.display="none";
+	document.getElementById('itemizedbill').style.display="none";
+	document.getElementById('splitpercent').style.display="block";
+	divleft = document.getElementById('percentdetailleft');
+	divright = document.getElementById('percentdetailright');
+	if(flagpc==0){
+	for(i=1;i<=count;i++)	
+	{
+		var label = document.createElement('label');	
+		label.setAttribute('for','username');
+		label.setAttribute('id','labelpercent'+String(i));
+		label.innerHTML = String(list[i-1]);
+		divleft.appendChild(label);
+		
+		var linebreak = document.createElement('br');
+		divleft.appendChild(linebreak);
+		
+		var lbl = document.getElementById('labelpercent'+String(i));
+		lbl.style.fontSize = '26px';
+
+		var input = document.createElement('input');	
+		input.setAttribute('type','text');
+		input.setAttribute('onkeyup','checkpercent()');
+		input.setAttribute('class','usrpercent');
+		input.setAttribute('id','userpercent'+String(i));
+		input.setAttribute('value',String(0.00));
+		divright.appendChild(input);
+		
+		var update = document.getElementById('userpercent'+String(i));
+		update.style.width = '60px';
+		update.style.marginBottom = '13px';
+		update.style.marginTop = '3px';
+
+		var span = document.createElement('span');
+		span.setAttribute('id','add-on'+String(i));
+		divright.appendChild(span);
+		var y = document.getElementById('add-on'+String(i));
+		y.style.marginRight = '40px';
+		y.innerHTML = '%';
+	
+		var linebreak = document.createElement('br');
+		divright.appendChild(linebreak);
+	}
+	var x = document.getElementById('percentdetail');
+	x.style.marginBottom = String(count*50)+'px';
+	var tot = document.getElementById('percentowed_total');
+	tot.innerHTML = 100.00+'%';
+	var rem = document.getElementById('percentowed_remaining');
+	rem.innerHTML = 100.00+'% left';
+	flagpc=1;
+	}
+}
+
+var checkpercent = function()
+{
+	var total = 100;
+	var subval = 0;
+
+	for(i=1;i<=count;i++)
+	{
+		var inp = document.getElementById('userpercent'+String(i));
+		if(isNaN(inp.value)){inp.value="";}
+		else{
+		var val = parseFloat(inp.value);
+		if(inp.value=="")val=0.00;
+		console.log(val);
+		
+		if(val>total){inp.value=total;}
+		
+		if(subval+val>total){inp.value = total-subval;subval=total;}
+		else{subval+=val;}
+
+		var left = document.getElementById('percentowed_remaining');
+		left.innerHTML = (total-subval).toFixed( 2 )+'% left';}		
+	}
+}
+
+var itemizedbill = function()
+{
+	$('button').addClass('active');
+	$('#itemize').removeClass('active');
+	document.getElementById('expenseform').style.width="94%";
+	document.getElementById('splitequal').style.display="none";
+	document.getElementById('splitexact').style.display="none";
+	document.getElementById('splitpercent').style.display="none";
+	document.getElementById('splitshare').style.display="none";
+	document.getElementById('itemizedbill').style.display="none";
+	document.getElementById('payeeform').style.display="none";
+	document.getElementById('itemizedbill').style.display="block";
+	var hd = document.getElementById('tablehead');
+	var bdy = document.getElementById('tablebody');
+	if(flagit==0){
+	var row = document.createElement('tr');
+	var desc = document.createElement('td');
+	desc.setAttribute('style','text-align:center;width:80px');
+	desc.innerHTML = "Item";
+	row.appendChild(desc);
+	var amt = document.createElement('td');
+	amt.setAttribute('style','text-align:center;width:60px');
+	amt.innerHTML = "Amount";
+	row.appendChild(amt);
+	for(i=1;i<=count;i++)
+	{
+		var name = document.createElement('td');
+		name.setAttribute('style','text-align:center;width:60px');
+		name.innerHTML = String(list[i-1]);
+		row.appendChild(name);
+	}
+	var name = document.createElement('td');
+	name.setAttribute('style','text-align:center;width:60px');
+	name.innerHTML = "Left";
+	row.appendChild(name);
+	hd.appendChild(row);
+	
+	var row = document.createElement('tr');
+	var des = document.createElement('td');
+	var inp = document.createElement('input');
+	inp.setAttribute('type','text');
+	inp.setAttribute('style','text-align:center;width:80px');
+	inp.setAttribute('onblur','addanother()');
+	inp.setAttribute('placeholder','Description');
+	des.appendChild(inp);
+	row.appendChild(des);
+	var amo = document.createElement('td');
+	var am = document.createElement('input');
+	am.setAttribute('type','text');
+	am.setAttribute('style','text-align:center;width:60px');
+	am.setAttribute('onkeyup','checkNum()');
+	am.setAttribute('placeholder','0.00');
+	amo.appendChild(am);
+	row.appendChild(amo);
+	for(i=1;i<=count;i++)
+	{
+		var value = document.createElement('td');
+		var vam = document.createElement('input');
+		vam.setAttribute('type','text');
+		vam.setAttribute('onkeyup','checkleft()');
+		vam.setAttribute('style','text-align:center;width:60px');
+		vam.setAttribute('placeholder','0.00');
+		value.appendChild(vam);
+		row.appendChild(value);
+	}	
+	var value = document.createElement('td');
+	var vam = document.createElement('input');
+	vam.setAttribute('type','text');
+	vam.setAttribute('readonly','true');
+	vam.setAttribute('style','text-align:center;width:60px');
+	vam.setAttribute('placeholder','0.00');
+	value.appendChild(vam);
+	row.appendChild(value);
+	bdy.appendChild(row);
+
+	var extra = document.getElementById('tableleft');
+	var eta = document.getElementById('extratable');
+	eta.style.marginTop = "20px";
+	var row = document.createElement('tr');
+	var tax = document.createElement('td');
+	tax.innerHTML = "  Tax  ";
+	row.appendChild(tax);
+	var txval = document.createElement('td');
+	var txvalue = document.createElement('input');
+	txvalue.setAttribute('type','text');
+	txvalue.setAttribute('placeholder','6.5 (In percentage)');
+	txvalue.setAttribute('id','taxvalue');
+	txvalue.setAttribute('onkeyup','tax()');
+	txvalue.setAttribute('style','text-align:center;width:150px');
+	txval.appendChild(txvalue);
+	row.appendChild(txval);
+	extra.appendChild(row);
+	
+	var newrow = document.createElement('tr');
+	var tip = document.createElement('td');
+	tip.innerHTML = "  Tip  ";
+	newrow.appendChild(tip);
+	
+	var tpval = document.createElement('td');
+	var tpvalue = document.createElement('input');
+	tpvalue.setAttribute('type','text');
+	tpvalue.setAttribute('placeholder','100Rs. (In numeric)');
+	tpvalue.setAttribute('id','tipvalue');
+	tpvalue.setAttribute('style','text-align:center;width:150px');
+	tpval.appendChild(tpvalue);
+	newrow.appendChild(tpval);
+	extra.appendChild(newrow);
+	
+	var anorow = document.createElement('tr');
+	var left = document.createElement('td');
+	left.innerHTML = "Amount Left";
+	anorow.appendChild(left);
+	var grandleft = document.createElement('td');
+	var glvalue = document.createElement('input');
+	glvalue.setAttribute('type','text');
+	glvalue.setAttribute('id','glvalue');
+	glvalue.setAttribute('readonly','true');
+	glvalue.setAttribute('style','text-align:center;width:150px');
+	glvalue.setAttribute('placeholder',String(data['total_amount']));
+	grandleft.appendChild(glvalue);
+	anorow.appendChild(grandleft);
+	extra.appendChild(anorow);
+	flagit=1;
+	}
+}
+
+var tax = function()
+{
+	var tx = document.getElementById('taxvalue');
+	if(tx.value=="")tx.value="0";
+	tx.value = tx.value.split('%')[0];
+	if(parseFloat(tx.value)>100)
+	{
+		tx.value = 100;
+	}
+	total_amount = ((100*parseFloat(data['total_amount']))/(100+parseFloat(tx.value)));
+	console.log(total_amount);
+	total_amount = total_amount.toFixed( 2 );
+	checkNum();
+}
+
+var addanother = function()
+{
+	var bdy = document.getElementById('tablebody');
+	var row = document.createElement('tr');
+	var des = document.createElement('td');
+	var inp = document.createElement('input');
+	inp.setAttribute('type','text');
+	inp.setAttribute('style','text-align:center;width:80px');
+	inp.setAttribute('onblur','addanother()');
+	inp.setAttribute('placeholder','Description');
+	des.appendChild(inp);
+	row.appendChild(des);
+	var amo = document.createElement('td');
+	var am = document.createElement('input');
+	am.setAttribute('type','text');
+	am.setAttribute('onkeyup','checkNum()');
+	am.setAttribute('style','text-align:center;width:60px');
+	am.setAttribute('placeholder','0.00');
+	amo.appendChild(am);
+	row.appendChild(amo);
+	for(i=1;i<=count;i++)
+	{
+		var value = document.createElement('td');
+		var vam = document.createElement('input');
+		vam.setAttribute('type','text');
+		vam.setAttribute('onkeyup','checkleft()');
+		vam.setAttribute('style','text-align:center;width:60px');
+		vam.setAttribute('placeholder','0.00');
+		value.appendChild(vam);
+		row.appendChild(value);
+	}	
+	var value = document.createElement('td');
+	var vam = document.createElement('input');
+	vam.setAttribute('type','text');
+	vam.setAttribute('readonly','true');
+	vam.setAttribute('style','text-align:center;width:60px');
+	vam.setAttribute('placeholder','0.00');
+	value.appendChild(vam);
+	row.appendChild(value);
+	bdy.appendChild(row);
+}
+
+var checkNum = function()
+{
+	var x = document.getElementById('tablebody');
+	for(i=0;i<x.childNodes.length;i++)
+	{
+		if((isNaN(x.childNodes[i].childNodes[1].childNodes[0].value))||x.childNodes[i].childNodes[1].childNodes[0].value==undefined||x.childNodes[i].childNodes[1].childNodes[0].value=="")
+			x.childNodes[i].childNodes[1].childNodes[0].value=0.00;
+	
+			x.childNodes[i].childNodes[2+count].childNodes[0].value=parseFloat(x.childNodes[i].childNodes[1].childNodes[0].value);
+	}
+
+	var y = document.getElementById('glvalue');
+	var tempsum=0;
+	
+	for(i=0;i<x.childNodes.length;i++)
+	{
+		console.log('here');
+		if(tempsum+parseFloat(x.childNodes[i].childNodes[1].childNodes[0].value)>total_amount)
+		{
+			console.log("glvalue");
+			console.log(parseFloat(total_amount)-tempsum);
+			x.childNodes[i].childNodes[1].childNodes[0].value = parseFloat((parseFloat(total_amount)-tempsum).toFixed( 2 ));
+			console.log(x.childNodes[i].childNodes[1].childNodes[0].value);
+		}
+		
+		tempsum += parseFloat((parseFloat(x.childNodes[i].childNodes[1].childNodes[0].value)).toFixed( 2 ));
+		console.log(tempsum);	
+		y.value = parseFloat((parseFloat(total_amount)-tempsum).toFixed( 2 ));
+	}
+	
+	for(i=0;i<x.childNodes.length;i++)
+	{
+		if((isNaN(x.childNodes[i].childNodes[1].childNodes[0].value))||x.childNodes[i].childNodes[1].childNodes[0].value==undefined||x.childNodes[i].childNodes[1].childNodes[0].value=="")
+			x.childNodes[i].childNodes[1].childNodes[0].value=0.00;
+	
+			x.childNodes[i].childNodes[2+count].childNodes[0].value=parseFloat(x.childNodes[i].childNodes[1].childNodes[0].value);
+	}
+}
+
+var checkleft = function()
+{	
+	var x = document.getElementById('tablebody');
+	checkNum();
+	for(i=0;i<x.childNodes.length;i++)
+	{
+		var amt = parseFloat(x.childNodes[i].childNodes[1].childNodes[0].value);
+		var sum = 0.00;
+		for(j=2;j<count+2;j++)
+		{
+			if((isNaN(x.childNodes[i].childNodes[j].childNodes[0].value))||x.childNodes[i].childNodes[j].childNodes[0].value==""||(x.childNodes[i].childNodes[j].childNodes[0].value)==undefined)
+				x.childNodes[i].childNodes[j].childNodes[0].value=0.00;
+			
+			if(sum+parseFloat(x.childNodes[i].childNodes[j].childNodes[0].value)>amt) x.childNodes[i].childNodes[j].childNodes[0].value=parseFloat(amt-sum);
+
+			sum+=parseFloat(x.childNodes[i].childNodes[j].childNodes[0].value);
+		}
+		x.childNodes[i].childNodes[j].childNodes[0].value=parseFloat(amt-sum);
+	}
+}
+#+END_SRC
+
+
+
+** =ajaxdash.js=:
+This file has the ajaax requests for the settling up,
+deleting an event or adding a bill.
+
+*** Content:
+#+name: js_ajaxdash
+#+BEGIN_SRC js
+var expendstring = "";
+var contristring = "";
+var stateoftran = 0;
+var listforitem = [];
+
+var youequaldata = function()
+{
+	var expend = parseFloat(data['total_amount'])/count;
+	for(i=0;i<list.length;i++)
+	{
+		expendstring = expendstring + String(list[i]) + ":" + String(expend) + ",";
+	}
+	contristring += String(myname) + ":" + String(data['total_amount']) + ",";
+	for(i=0;i<list.length-1;i++)
+	{
+		contristring += String(list[i]) + ":" + "0" + ",";
+	}
+	console.log(expendstring);
+	console.log(contristring);
+	stateoftran = 1;
+	finaldest();
+}
+
+var youmeme = function()
+{
+	for(i=0;i<list.length-1;i++)
+	{
+		contristring += String(list[i]) + ":" + "0" + ",";
+	}
+	contristring += String(myname) + ":" + String(data['total_amount']) + ",";
+	return;
+}
+
+var finaldest = function()
+{
+	$.ajax({
+		url:'http://127.0.0.1:5000/split',
+		method:'POST',
+		data:{contributors:contristring,expenditors:expendstring,description:data['description'],state:stateoftran,bill_amount:data['total_amount']},
+		success:function(response){passto();dashload();},
+	});
+}
+
+var checkmul = function()
+{
+	var partsum = 0;
+	for(i=1;i<=count;i++)
+	{
+		var mul = document.getElementById('multiple'+String(i-1));
+		if(mul.value==""||mul.value==null||mul.value==undefined)
+		{
+			document.getElementById('payeeform').style.display = "block";
+			document.getElementById('errorinpayee').style.display = "block";
+			setTimeout(
+				function()
+				{
+					document.getElementById('errorinpayee').style.display = "none";
+				},5000);
+			return 1;
+		}
+		var value = parseFloat(mul.value);
+		console.log("value: "+value);
+		partsum += value;
+		console.log("part: "+partsum);
+	}
+	if(partsum!=data['total_amount'])
+	{
+		document.getElementById('payeeform').style.display = "block";
+		document.getElementById('errorinpayee').style.display = "block";
+		setTimeout(
+			function()
+			{
+				document.getElementById('errorinpayee').style.display = "none";
+			},5000);
+		return 1;
+	}
+	return 0;
+}
+
+var submitequal = function()
+{
+	stateoftran=1;
+	for(i=1;i<=count;i++)
+	{
+		var iden = document.getElementById('userequal'+String(i));
+		expendstring = expendstring + String(list[i-1]) + ":" + String(iden.value) + ",";	
+	}
+	if(you==1){youmeme();}
+	
+	else
+	{
+		if(checkmul())
+		{
+			expendstring="";
+			contristring="";
+			stateoftran=0;
+			return;
+		}
+		for(i=1;i<=count;i++)
+		{
+			var mul = document.getElementById('multiple'+String(i-1));
+			console.log(mul);
+			console.log(mul.value);
+			contristring = contristring + String(list[i-1]) + ":" + String(mul.value) + ",";
+		}
+	}
+	console.log(expendstring);
+	console.log(contristring);
+	finaldest();
+}
+
+var cacheexact = function()
+{
+	var rem = document.getElementById('exactowed_remaining');
+	if(rem.innerText=='0.00 left')return 0;
+	else
+	{
+		document.getElementById('exacterror').style.display="block";
+		setTimeout(
+				function()
+				{
+					document.getElementById('exacterror').style.display="none";
+				},3000
+		)
+	}	
+	return 1;
+
+}
+
+var submitexact = function()
+{
+	stateoftran = 1;
+	if(cacheexact())return;
+
+	for(i=1;i<=count;i++)
+	{
+		var iden = document.getElementById('userexact'+String(i));
+		expendstring = expendstring + String(list[i-1]) + ":" + String(iden.value) + ",";	
+	}
+	if(you==1){youmeme();}
+
+	else
+	{
+		if(checkmul())
+		{
+			expendstring="";
+			contristring="";
+			stateoftran = 0;
+			return;
+		}
+		for(i=1;i<=count;i++)
+		{
+			var mul = document.getElementById('multiple'+String(i-1));
+			console.log(mul);
+			console.log(mul.value);
+			contristring = contristring + String(list[i-1]) + ":" + String(mul.value) + ",";
+		}
+	}
+	console.log(expendstring);
+	console.log(contristring);
+	finaldest();
+}
+
+var cachepercent = function()
+{
+	var rem = document.getElementById('percentowed_remaining');
+	if(rem.innerText=='0.00% left')return 0;
+	else{
+		document.getElementById('percenterror').style.display="block";
+		setTimeout(
+				function()
+				{
+					document.getElementById('percenterror').style.display="none";
+				},3000
+		)
+
+	}
+	return 1;	
+}
+
+var submitpercent = function()
+{
+	stateoftran = 2;
+	if(cachepercent())return;
+	for(i=1;i<=count;i++)
+	{
+		var iden = document.getElementById('userpercent'+String(i));
+		expendstring = expendstring + String(list[i-1]) + ":" + String(iden.value) + ",";	
+	}
+	if(you==1){youmeme();}
+
+	else
+	{
+		if(checkmul())
+		{
+			expendstring="";
+			contristring="";
+			stateoftran = 0;
+			return;
+		}
+		for(i=1;i<=count;i++)
+		{
+			var mul = document.getElementById('multiple'+String(i-1));
+			console.log(mul);
+			console.log(mul.value);
+			contristring = contristring + String(list[i-1]) + ":" + String(mul.value) + ",";
+		}
+	}
+	console.log(expendstring);
+	console.log(contristring);
+	finaldest();
+}
+
+var submitshare = function()
+{
+	stateoftran = 3;
+	for(i=1;i<=count;i++)
+	{
+		var iden = document.getElementById('usershare'+String(i));
+		expendstring = expendstring + String(list[i-1]) + ":" + String(iden.value) + ",";	
+	}
+	if(you==1){youmeme();}
+
+	else
+	{
+		if(checkmul())
+		{
+			expendstring="";
+			contristring="";
+			stateoftran = 0;
+			return;
+		}
+		for(i=1;i<=count;i++)
+		{
+			var mul = document.getElementById('multiple'+String(i-1));
+			console.log(mul);
+			console.log(mul.value);
+			contristring = contristring + String(list[i-1]) + ":" + String(mul.value) + ",";
+		}
+	}
+	console.log(expendstring);
+	console.log(contristring);
+	finaldest();
+}
+
+var checkitem = function()
+{
+	if((document.getElementById('glvalue')).value==""||parseFloat((document.getElementById('glvalue')).value)>0)return 0;
+	var x = document.getElementById('tablebody');
+	for(i=0;i<x.childElementCount;i++)
+	{
+		if(x.childNodes[i].childNodes[0].childNodes[0].value=="" && x.childNodes[i].childNodes[1].childNodes[0].value!="" && parseFloat(x.childNodes[i].childNodes[1].childNodes[0].value)!=0){console.log("0error");return 0;}
+		
+		if(parseFloat(x.childNodes[i].childNodes[1].childNodes[0].value)==0 && x.childNodes[i].childNodes[0].childNodes[0].value!=""){console.log("1error");return 0;}
+		
+		if(x.childNodes[i].childNodes[2+count].childNodes[0].value!="" && parseFloat(x.childNodes[i].childNodes[2+count].childNodes[0].value)!=0){console.log(i+"2error");return 0;}
+	}
+	return 1;
+}
+
+var checkmulitem = function(includingtip)
+{
+        var partsum = 0;
+        for(i=1;i<=count;i++)
+        {
+                var mul = document.getElementById('multiple'+String(i-1));
+                if(mul.value==""||mul.value==null||mul.value==undefined)
+                {
+                        document.getElementById('payeeform').style.display = "block";
+                        document.getElementById('errorinpayee').style.display = "block";
+                        setTimeout(
+                                function()
+                                {
+                                        document.getElementById('errorinpayee').style.display = "none";
+                                },5000);
+                        return 1;
+                }
+                var value = parseFloat(mul.value);
+                console.log("value: "+value);
+                partsum += value;
+                console.log("part: "+partsum);
+        }
+        if(partsum!=includingtip)
+        {
+                document.getElementById('payeeform').style.display = "block";
+                document.getElementById('errorinpayee').style.display = "block";
+                setTimeout(
+                        function()
+                        {
+                                document.getElementById('errorinpayee').style.display = "none";
+                        },5000);
+                return 1;
+        }
+        return 0;
+}
+
+
+var submititem = function()
+{
+	if(checkitem()==0)
+	{
+		document.getElementById('erroritem').style.display = "block";
+		setTimeout(function(){document.getElementById('erroritem').style.display = "none";},5000);		
+		return;
+	}
+
+	else
+	{
+		tiplist=[];
+
+		for(j=0;j<count;j++)listforitem[j]=0;
+		for(j=0;j<count;j++)tiplist[j]=0;
+
+		var x = document.getElementById('tablebody');
+		for(i=0;i<x.childElementCount;i++)
+		{
+			console.log(i);
+			if(x.childNodes[i].childNodes[0].childNodes[0].value=="" && (parseFloat(x.childNodes[i].childNodes[1].childNodes[0].value)==0||x.childNodes[i].childNodes[1].childNodes[0].value==""))continue;
+			for(j=0;j<count;j++)
+			{
+				listforitem[j]+=parseFloat(x.childNodes[i].childNodes[2+j].childNodes[0].value);
+			}
+		}
+		if(document.getElementById('tipvalue').value!=""){
+		for(j=0;j<count;j++){
+			tiplist[j]=((listforitem[j]*document.getElementById('tipvalue').value)/total_amount);
+		}}	
+
+	
+		if(document.getElementById('taxvalue').value!=""){
+		for(j=0;j<count;j++)
+		{
+			listforitem[j]=listforitem[j]+((document.getElementById('taxvalue').value*listforitem[j])/100);
+		}}
+		if(document.getElementById('tipvalue').value!=""){
+		for(j=0;j<count;j++)
+		{
+			listforitem[j]=listforitem[j]+tiplist[j];
+		}}	
+	}
+
+	var includingtip = parseFloat(document.getElementById('tipvalue').value)+parseFloat(data['total_amount']);	
+	stateoftran=1;
+
+	if(you==1)
+	{
+		for(i=0;i<list.length-1;i++)
+		{
+			contristring += String(list[i]) + ":" + "0" + ",";
+		}
+		contristring += String(myname) + ":" + String(includingtip) + ",";
+	}
+	else
+	{
+		if(checkmulitem(includingtip)){contristring="";expendstring="";stateoftran=0;return;}
+		
+	
+		for(i=1;i<=count;i++)
+                {
+                        var mul = document.getElementById('multiple'+String(i-1));
+                        console.log(mul);
+                        console.log(mul.value);
+                        contristring = contristring + String(list[i-1]) + ":" + String(mul.value) + ",";
+                }
+	}
+	
+	for(i=0;i<count;i++)
+		expendstring = expendstring + String(list[i]) + ":" + String(listforitem[i]) + ",";	
+	
+	console.log(expendstring);
+	console.log(contristring);
+	finaldest();
+}
+#+END_SRC
+
+
+
+
+
+* Styles
+** =home.css=:
+
+*** Content:
+#+name: css_home
+#+BEGIN_SRC css
+body{
+	margin:0px;
+	padding:0px;
+}
+
+.wrapper{
+  width:1960px;
+  height:1080px;
+  position:relative;
+  overflow:hidden;
+}
+
+.image {
+  width:100%;
+  height:100%; 
+  background: url('index.jpg') no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  -webkit-animation: zoomin 8s 1;
+  opacity: 1;  
+}
+
+@-webkit-keyframes zoomin {
+    0% {
+        -webkit-transform: scale(1);
+    }
+    50% {
+        -webkit-transform: scale(1.4);
+    }
+    100% {
+        -webkit-transform: scale(0.95);
+    }
+
+}
+
+/*
+@keyframes zoomin {
+  0%   { background-size: 100%; }
+  25%   { background-size: 120%; }
+  50%   { background-size: 150%; }
+  75% { background-size: 120%; }
+  100% { background-size: 100%; }
+}
+*/
+#load{
+	animation-duration: 650ms;
+	animation-name: blink;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+}
+
+@keyframes blink{
+	from{
+	opacity:1;}
+
+	to{
+	opacity:0;}
+}
+#+END_SRC
+
+
+** =homepage.css=:
+
+*** Content:
+#+name: css_homepage
+#+BEGIN_SRC css
+#name{
+	font-family:"Comic Sans MS", cursive, sans-serif;
+}
+
+.text-wrapper {
+    margin-right:78%;
+    text-align: center;
+    font-size: 500%;
+}
+
+.animated-words {
+    font-size: 100%;
+    display: inline-block;
+}
+
+.animated-words span:nth-child(2) { 
+    -webkit-animation-delay: 3s; 
+    -ms-animation-delay: 3s; 
+    animation-delay: 3s; 
+    color: #6b889d;
+}
+.animated-words span:nth-child(3) { 
+    -webkit-animation-delay: 6s; 
+    -ms-animation-delay: 6s; 
+    animation-delay: 6s; 
+    color: #6b739d; 
+}
+.animated-words span:nth-child(4) { 
+    -webkit-animation-delay: 9s; 
+    -ms-animation-delay: 9s; 
+    animation-delay: 9s; 
+    color: #7a6b9d;
+}
+.animated-words span:nth-child(5) { 
+    -webkit-animation-delay: 12s; 
+    -ms-animation-delay: 12s; 
+    animation-delay: 12s; 
+    color: #8d6b9d;
+}
+.animated-words span:nth-child(6) { 
+    -webkit-animation-delay: 15s; 
+    -ms-animation-delay: 15s; 
+    animation-delay: 15s; 
+    color: #9b6b9d;
+}
+
+.animated-words span {
+    position: absolute;
+    opacity: 0;
+    overflow: hidden;
+    color: #6b969d;
+    -webkit-animation: animateWord 18s linear 1 0s;
+    -ms-animation: animateWord 18s linear 1 0s;
+    animation: animateWord 18s linear 1 0s;
+}
+
+@-webkit-keyframes animateWord {
+    0% { opacity: 0; }
+    2% { opacity: 0; -webkit-transform: translateY(-30px); }
+    5% { opacity: 1; -webkit-transform: translateY(0px);}
+    17% { opacity: 1; -webkit-transform: translateY(0px); }
+    20% { opacity: 0; -webkit-transform: translateY(30px); }
+    80% { opacity: 0; }
+    100% { opacity: 0; }
+}
+#+END_SRC
+
+
+
+** =dashboard.css=:
+
+*** Content:
+#+name: css_dashboard
+#+BEGIN_SRC css
+.glyphicon-thumbs-down,.glyphicon-trash,.glyphicon-thumbs-up:hover
+{
+	cursor:pointer;
+}
+
+#netbody tr:nth-child(odd){
+	background-color:#7094db;
+}
+
+#netbody tr:nth-child(even){
+	background-color:#adc2eb;
+}
+
+.dark{
+	background-color:#7094db;
+}
+
+.light{
+	background-color:#adc2eb;
+}
+
+#netbody tr:hover
+{
+	background-color:#ebf0fa;
+}
+
+#recentbody tr:hover
+{
+	background-color:#ebf0fa;
+}
+
+#settlebody tr:hover
+{
+	background-color:#ebf0fa;
+}
+
+#allbody tr:hover
+{
+	background-color:#ebf0fa;
+}
+
+.pull-right{
+	float:right;
+}
+
+.dropdown-toggle{
+	color:#f2f2f2;
+	font-size:200%;
+}
+
+.dropdown-toggle:hover{
+	color:#24478f;	
+	font-size:200%;
+}
+
+.nav{
+	margin-right: 250px;
+	height: 60px;
+}
+
+.dropdown{
+	height: 60px;
+}
+
+.nav.pull-right .dropdown-menu{
+	padding:0;
+	margin-top:-1px;
+	margin-left:-135px;
+}
+
+.dropdown-menu{
+	z-index:99999;
+}
+
+.dropdown-menu > li{
+	font-size:175%;
+}
+
+.center_container{
+	float:left;
+	height:100%;
+	margin-top:20px;
+	margin-left:300px;
+}
+
+#left_sidebar{
+	float:left;
+	margin-left:0;
+	height:100%;
+	padding-right:20px;
+}
+
+#view_links{
+	margin-left:0;
+	padding-right:10px;
+}
+
+#left_sidebar #view_links a{
+	display:block;
+	height: 35px;
+	padding: 3px 18px 5px 5px;
+	font-size:22px;
+	overflow: hidden;
+	text-decoration: none;
+}
+
+#left_sidebar #view_links a:hover{
+	background-color:#24478f;
+	color:#f2f2f2;
+	text-decoration:none;
+}
+
+.open{
+	border-left: 6px solid #24478f;
+}
+
+#center_column{
+	width:800px;
+	height:100%;
+	float:right;
+	margin-left:50px;	
+	box-shadow: 5px 0 5px -5px #24478f, -5px 0 5px -5px #24478f;
+}
+
+#center_column .dashboard.header{
+	height:74px;
+	width:800px;
+	background-color:#adc2eb;
+}
+
+#center_column > .header{
+	position: relative;
+}
+
+.topbar h1{
+	display: inline-block;
+	vertical-align:middle;
+	padding-left:20px;
+}
+
+#bill h1{
+	display: inline-block;
+	vertical-align:middle;
+	padding-left:20px;
+}
+
+#settleup h1{
+	display: inline-block;
+	vertical-align:middle;
+	padding-left:20px;
+}
+
+#recentact h1{
+	display: inline-block;
+	vertical-align:middle;
+	padding-left:20px;
+}
+
+#allexpense h1{
+	display: inline-block;
+	vertical-align:middle;
+	padding-left:20px;
+}
+
+.topbar .actions{
+	position:absolute;
+	top:13px;
+	right:10px;
+	display:inline-block;
+}
+
+.topbar .actions > a.btn, .topbar .actions > .btn-group{
+	display:inline-block;
+	vertical-align:middle;
+}
+
+.btn-orange{
+	background-color: #ff652f;
+	color: #fff;
+}
+
+.btn-theme{
+	background-color: #24478f;
+	color: #fff;
+}
+
+.btn-large{
+	padding: 9px 14px;
+	font-size:25px;
+	line-height: normal;
+	border-radius: 5px;
+}
+
+.btn-orange:hover{
+	background-color: #ffa280;
+}
+
+.btn-theme:hover{
+	background-color: #85a3e0;
+}
+
+#bill{
+	display:none;
+}
+
+#settleup{
+	display:none;
+}
+
+#recentact{
+	display:none;
+}
+
+#allexpense{
+	display:none;
+}
+
+#center_column #bill{
+	height:74px;
+	width:800px;
+	background-color:#adc2eb;
+}
+
+#center_column #allexpense{
+	height:74px;
+	width:800px;
+	background-color:#adc2eb;
+}
+
+#center_column #settleup{
+	height:74px;
+	width:800px;
+	background-color:#adc2eb;
+}
+
+#center_column #recentact{
+	height:74px;
+	width:800px;
+	background-color:#adc2eb;
+}
+
+#more, #you, #equally, #unequally, #multiple{
+	padding:4px;
+	background-color:#24478f;
+	color:#f2f2f2;
+	border-radius:10px;
+}
+
+#more, #you, #equally, #unequally, #multiple:hover{
+	text-decoration:none;
+	cursor:pointer;
+}
+
+#addmorebutton{
+	margin:5px;
+}
+
+.user{
+	margin-bottom:5px;
+}
+
+#payeeform{
+	display:none;
+}
+
+#inline_button{
+	display:inline-block;
+}
+
+#status{
+	display:none;
+}
+
+#meta_data{
+	display:block;
+}
+
+#expenseform{
+	display:none;
+	margin:5px;
+}
+
+.active{
+	outline:0;
+	z-index:-2;
+	box-shadow:inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05);
+	background-color:#e6e6e6;
+}
+
+#settle_message{
+	padding-top:30px;
+	text-align:center;
+	color:#adc2eb;
+}
+
+.ui-widget{
+	padding:30px;
+}
+
+#savefriends{
+	padding-left:30px;
+	padding-top:15px;
+	padding-bottom:20px;
+}	
+
+#addmorebutton{
+	padding-left:25px;
+}
+
+#adding{
+	margin:5%;
+	width:70%;
+	float:left;
+	border: 2px solid #24478f;
+}
+
+.user{
+	border: 1px solid #f2f2f2;
+	background-color:#adc2eb;
+	border-radius:0px 7px 7px 0px;
+	outline:0;
+	height:40px;
+	font-size:40px;
+	padding-left:4px;
+}
+
+#meta_add{
+	padding:3%;
+	width:75%;
+	margin:5%;
+	float:left;
+	border: 2px solid #24478f;
+}
+
+#description, #totalamount{
+	margin:3%;
+	border: 1px solid #f2f2f2;
+	background-color:#adc2eb;
+	border-radius:0px 7px 7px 0px;
+	outline:0;
+	padding-left:4px;
+	font-size:25px;
+}
+
+#totalamount{
+	height:33px;
+	font-size:25px;
+}
+
+#headhi{
+	margin-top:4%;
+	right:0px;
+}
+
+#addmore, #submit, #headhi{
+	padding:4px;
+	border:none;
+	border-radius:10px;
+	font-size:25px;
+}
+
+#addmore, #submit, #headhi:hover{
+	cursor:pointer;	
+	text-decoration:none;
+}
+
+#addmore{
+	background-color:#24478f;
+	height:32px;
+	color:#fff;
+}
+
+#submit, #headhi{
+	background-color:#ff652f;
+	color:#fff;
+	height:40px;
+}
+
+#status{
+	padding:4%;
+	margin:4%;
+	width:90%;
+	border: 2px solid #24478f;
+	border-radius: 10px;
+	font-size:27px;
+}
+
+#mainforms{
+	display:inline-block;
+	width:100%;
+	margin-left:4%;
+	margin-right:4%;
+}
+
+#payeeform, #expenseform{
+	width:40%;
+}
+
+#payeeform{
+	padding-top:53px;
+}
+
+#expenseform{
+	margin-right:50px;
+}
+
+#inline_button{
+	width:100%;
+	font-size:200%;	
+}
+
+#splitequal h1{
+	border-bottom:2px solid black;
+}
+
+#splitexact h1{
+	border-bottom:2px solid black;
+}
+
+#splitequal h1{
+	padding-bottom: 10px;
+}
+
+#splitexact h1{
+	padding-bottom: 10px;
+}
+
+#splitpercent h1{
+	border-bottom:2px solid black;
+}
+
+#splitpercent h1{
+	padding-bottom: 10px;
+}
+
+#splitshare h1{
+	border-bottom:2px solid black;
+}
+
+#splitshare h1{
+	padding-bottom: 10px;
+}
+
+#payeeform h1{
+	border-bottom:2px solid black;
+}
+
+#payeeform h1{
+	padding-bottom: 10px;
+}
+
+#itemizedbill h1{
+	border-bottom:2px solid black;
+}
+
+#itemizedbill h1{
+	padding-bottom: 10px;
+}
+
+#+END_SRC
+
+
+
+* Tangle
+#+BEGIN_SRC python :eval no :noweb yes :tangle bonus.py
+<<bonus>>
+#+END_SRC
+
+

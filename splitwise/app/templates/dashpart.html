@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+        <link rel= "stylesheet" type= "text/css" href="{{ url_for('static', filename='styles/dashboard.css')}}">
+        <style>
+                body{margin:0px 0px;padding:0px 0px; background-color:#f2f2f2;}
+        </style>
+</head>
+<body>
+        <div class="title" style="height:60px; width:100%; background-color:#24478f; margin-left:0px; margin-top:0px; float:left; position:relative;">
+	   <span id="name" style="margin-left:300px; top:5px; font-size:250%; color:#f2f2f2; position:relative;">
+                S P L I T W I S E
+           </span>
+	   <ul class="nav pull-right">
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }}
+				<b class="caret"></b>
+			</a>
+			<ul class="dropdown-menu pull-right">
+   			 <li><a href="/account/settings">Your account</a></li>
+   			 <li><a href="/groups/new">Create a group</a></li>
+			 <li><a onclick="logout()">Log out</a></li>
+  			</ul>
+		</li>
+	   </ul>
+	</div>
+	<div class="center_container">
+	    <div id="left_sidebar">
+		<div id="view_links">
+			<br />
+			<br />
+			<br />
+			<br />
+			<a href="#/dashboard" id="dashboard_link" class="open">
+				<span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;Dashboard
+			</a>
+			<a href="#/activity" id="notification_link">
+				<span class="glyphicon glyphicon-flag"></span>&nbsp;&nbsp;Recent Activity
+			</a>
+			<a href="#/allactivity" id="allnotification_link">
+				<span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;All Expenses
+			</a>
+			<br />
+			<br />
+			<br />
+			<br />
+			<a onclick="addfriend()" id="addfriend_link">
+				<span class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;Add Friend
+			</a>
+			<div id="add_friend" style="display:none;">
+			    <div id="inner_friend">
+				<fieldset>
+		    		<label for="email" style="font-size:130%">Email or Username</label>
+				<br />
+		    		<input type="email" class="input" style="color:black;" name="addemail" id="addemail" value="" tabindex="1" />
+				<br />
+		    		<input type="button" class="input" value="Add" id="addbutton" onclick="add()" style=" height:27px; border:none; background-color:#5c85d6; color:#f2f2f2; float:right; margin-top:3%; margin-right:14%" tabindex="4">
+				</fieldset>
+				<br />
+				<br />
+			   </div>
+			</div>
+			<a href="/addgroup" id="addgroup_link">
+				<span class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;Create Group
+			</a>
+		</div>
+	    </div>
+	    <div id="center_column">
+		<div class="dashboard header" id="dash">
+		    <div class="topbar">
+			<h1>Dashboard</h1>
+			<div class="actions">
+			   <a class="btn btn-large btn-orange" onclick="addbill()">
+				Add a bill
+				</a>
+			   <a class="btn btn-large btn-theme" onclick="settle()">
+				Settle Up
+				</a>
+			</div>
+		    </div>
+		</div>
+		<div id="bill">
+		    <div id="inside_bill">
+			<h1>Add A Bill</h1>
+		    </div>
+		</div>
+		<div id="dashboard_content">
+		    <div id="settle_message">
+			Congrat's you are settled up!
+		    </div>
+		</div>
+		<div id="addbill_content">
+		    <table id="add_table">
+			<tr>
+				<td>Enter Description:</td>
+				<td><textarea id="description" placeholder="Something about your new bill" rows="4" cols="40"></textarea></td>
+			</tr>
+			<tr>
+				<td>Enter Amount:</td>
+				<td><input type="text" id="totalamount" placeholder="Enter bill amount" /></td>
+			</tr>
+		    </table>
+		    We assume, it's paid by <span id="you">you</span> and it's split <span id="equally">equally</span>.
+		    <div id="multiple"></div>
+		</div>
+	     </div>
+	</div>
+	<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>

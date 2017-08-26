@@ -1,0 +1,152 @@
+.pull-right{
+	float:right;
+}
+
+.dropdown-toggle{
+	color:#f2f2f2;
+	font-size:200%;
+}
+
+.dropdown-toggle:hover{
+	color:#24478f;	
+	font-size:200%;
+}
+
+.nav{
+	margin-right: 250px;
+	height: 60px;
+}
+
+.dropdown{
+	height: 60px;
+}
+
+.nav.pull-right .dropdown-menu{
+	padding:0;
+	margin-top:-1px;
+	margin-left:-135px;
+}
+
+.dropdown-menu{
+	z-index:99999;
+}
+
+.dropdown-menu > li{
+	font-size:175%;
+}
+
+.center_container{
+	float:left;
+	height:890px;
+	margin-top:20px;
+	margin-left:300px;
+}
+
+#left_sidebar{
+	float:left;
+	margin-left:0;
+	height:100%;
+	padding-right:20px;
+}
+
+#view_links{
+	margin-left:0;
+	padding-right:10px;
+}
+
+#left_sidebar #view_links a{
+	display:block;
+	height: 35px;
+	padding: 3px 18px 5px 5px;
+	font-size:22px;
+	overflow: hidden;
+	text-decoration: none;
+}
+
+#left_sidebar #view_links a:hover{
+	background-color:#24478f;
+	color:#f2f2f2;
+	text-decoration:none;
+}
+
+.open{
+	border-left: 6px solid #24478f;
+}
+
+#center_column{
+	width:800px;
+	height:100%;
+	float:right;
+	margin-left:50px;	
+	box-shadow: 5px 0 5px -5px #24478f, -5px 0 5px -5px #24478f;
+}
+
+#center_column .dashboard.header{
+	height:74px;
+	width:800px;
+	background-color:#adc2eb;
+}
+
+#center_column > .header{
+	position: relative;
+}
+
+.topbar h1{
+	display: inline-block;
+	vertical-align:middle;
+	padding-left:20px;
+}
+
+#bill h1{
+	display: inline-block;
+	vertical-align:middle;
+	padding-left:20px;
+}
+
+.topbar .actions{
+	position:absolute;
+	top:13px;
+	right:10px;
+	display:inline-block;
+}
+
+.topbar .actions > a.btn, .topbar .actions > .btn-group{
+	display:inline-block;
+	vertical-align:middle;
+}
+
+.btn-orange{
+	background-color: #ff652f;
+	color: #fff;
+}
+
+.btn-theme{
+	background-color: #24478f;
+	color: #fff;
+}
+
+.btn-large{
+	padding: 9px 14px;
+	font-size:25px;
+	line-height: normal;
+	border-radius: 5px;
+}
+
+.btn-orange:hover{
+	background-color: #ffa280;
+}
+
+.btn-theme:hover{
+	background-color: #85a3e0;
+}
+
+#bill{
+	display:none;
+}
+
+#center_column #bill{
+	height:74px;
+	width:800px;
+	background-color:#adc2eb;
+}
+

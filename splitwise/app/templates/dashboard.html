@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>  
+	<link rel= "stylesheet" type= "text/css" href="{{ url_for('static', filename='styles/dashboard.css')}}">
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <style>
+                body{margin:0px 0px;padding:0px 0px; background-color:#f2f2f2;}
+        </style>
+</head>
+<body onload="dashload()">
+        <div class="title" style="height:60px; width:100%; background-color:#24478f; margin-left:0px; margin-top:0px; float:left; position:relative;">
+	   <span id="name" style="margin-left:300px; top:5px; font-size:250%; color:#f2f2f2; position:relative;">
+                S P L I T W I S E
+           </span>
+	   <ul class="nav pull-right">
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }}
+				<b class="caret"></b>
+			</a>
+			<ul class="dropdown-menu pull-right">
+   			 <li><a href="/account/settings">Your account</a></li>
+   			 <li><a href="/groups/new">Create a group</a></li>
+			 <li><a onclick="logout()">Log out</a></li>
+  			</ul>
+		</li>
+	   </ul>
+	</div>
+	<div class="center_container">
+	    <div id="left_sidebar">
+		<div id="view_links">
+			<br />
+			<br />
+			<br />
+			<br />
+			<a id="dashboard_link" class="open" onclick="dashload()">
+				<span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;Dashboard
+			</a>
+			<a id="notification_link" onclick="recentactivity()">
+				<span class="glyphicon glyphicon-flag"></span>&nbsp;&nbsp;Recent Activity
+			</a>
+			<a id="allnotification_link" onclick="allexpenses()">
+				<span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;All Expenses
+			</a>
+			<br />
+			<br />
+			<br />
+			<br />
+			<a onclick="addfriend()" id="addfriend_link">
+				<span class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;Add Friend
+			</a>
+			<div id="add_friend" style="display:none;">
+			    <div id="inner_friend">
+				<fieldset>
+		    		<label for="email" style="font-size:130%">Email or Username</label>
+				<br />
+		    		<input type="email" class="input" style="color:black;" name="addemail" id="addemail" value="" tabindex="1" />
+				<br />
+		    		<input type="button" class="input" value="Add" id="addbutton" onclick="add()" style=" height:27px; border:none; background-color:#5c85d6; color:#f2f2f2; float:right; margin-top:3%; margin-right:14%" tabindex="4">
+				</fieldset>
+				<br />
+				<br />
+			   </div>
+			</div>
+			<a href="/addgroup" id="addgroup_link">
+				<span class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;Create Group
+			</a>
+		</div>
+	    </div>
+	    <div id="center_column">
+		<div class="dashboard header" id="dash">
+		    <div class="topbar">
+			<h1>Dashboard</h1>
+			<div class="actions">
+			   <a class="btn btn-large btn-orange" onclick="addbill()">
+				Add a bill
+				</a>
+			   <a class="btn btn-large btn-theme" onclick="settle()">
+				Settle Up
+				</a>
+			</div>
+		    </div>
+		</div>
+
+		<div id="bill">
+		    <div id="inside_bill">
+			<h1>Add A Bill</h1>
+		    </div>
+		</div>
+
+		<div id="settleup">
+			<div id="inside_settle">
+				<h1>Settle Up</h1>
+			</div>
+		</div>
+
+		<div id="recentact">
+			<div id="inside_recent">
+				<h1>Recent Activity</h1>
+			</div>
+		</div>
+
+		<div id="allexpense">
+			<div id="inside_all">
+				<h1>All Expenses</h1>
+			</div>
+		</div>
+
+		<div id="dashboard_content">
+		    <div id="settle_message">
+			<h1>Congrat's you are settled up!</h1><h1>Awesome...</h1>
+		    </div>
+		    <div id="nettran" style="display:none;">
+			<table id="nettable" style="width:100%;">
+				<tbody id="netbody">
+				</tbody>
+			</table>
+		    </div>
+		</div>
+
+		<div id="settleup_content" style="display:none;">
+			<table id="settletable" style="width:100%;">
+				<tbody id="settlebody">
+				</tbody>
+			</table>
+		</div>
+
+		<div id="allactive_content" style="display:none;">
+			<table id="alltable" style="width:100%;">
+				<tbody id = "allbody">
+				</tbody>
+			</table>
+		</div>
+
+		<div id="recentactive_content" style="display:none;">
+			<table id="recenttable" style="width:100%;">
+				<tbody id = "recentbody">
+				</tbody>
+			</table>
+		</div>
+
+		<div id="addbill_content" style="display:none;">
+		  <div id="adding">
+		    <div class="ui-widget">
+		    <div id="addfriend">
+			<h2>Add Friends You Share Bill With</h2><br /><br />
+			<input type="text" name="username" class="user" style="font-size:27px;" id="username1" onblur="duplicate()" onkeypress="autocom()" placeholder="Enter Username"/><br />
+		    </div>
+		    </div>
+		    <div id="addmorebutton">
+			<a id="addmore" onclick="addmore()">Add more</a>			
+		    </div>
+		    <div id="savefriends"><input type="button" id="submit" value="Save" onclick="makelist()"/></div>
+		 
+		   </div>
+		   <div id="meta_add" style="display:none;">
+		    <table id="add_table">
+			<tr>
+				<td style="font-size:27px;">Description:</td>
+				<td><textarea id="description" placeholder="Something about your bill" rows="4" cols="20"></textarea></td>
+			</tr>
+			<tr>
+				<td style="font-size:27px;">Amount:</td>
+				<td><input type="text" id="totalamount" placeholder="Enter bill amount" /></td>
+			</tr>
+		    </table>
+		    <div><input type="button" id="headhi" value="Continue" onclick="extra()"/></div>
+		   </div>		       
+		    <div id="status">
+				We assume, it's paid by <a id="you" onclick="single()">you</a> and it's split <a id="equally" onclick="equal()">equally</a>.<br />
+				<input class="btn btn-large btn-orange" id="plain" type="button" value="Done" onclick="youequaldata()" />
+				<h2 style="text-align:center;">OR</h2>
+		    		<br />If payee also includes some of your friends, click <a id="multiple" onclick="multiple()">multiple</a>.
+		    		<br />If expense isn't split equally among you, click <a id="unequally" onclick="unequal()">unequally</a>.
+		    </div>
+		      <div id="mainforms">	
+			<div id="payeeform" style="float:left;">
+				<h1 style="margin-bottom:20px;">Multiple People</h1><br />
+				<span id="errorinpayee" style="color:red;display:none">Amount of the bill doesn't equal total amount above. Please check again and submit.</span>
+			</div>
+		    	
+			<div id="expenseform" style="float:right">
+				<div id="inline_button"><button id="equal" onclick="equalform()" class="active" data-toggle="tooltip" data-placement="bottom" title="Split Equally">=</button><button id="exact" onclick="exactform()" data-toggle="tooltip" data-placement="top" title="Split By Exact Amount">1.23</button><button id="percentage" onclick="percentform()" data-toggle="tooltip" data-placement="top" title="Split By Percentage">%</button><button id="share" onclick="shareform()" data-toggle="tooltip" data-placement="top" title="Split By Share"><span class="glyphicon glyphicon-tasks" style="vertical-align:middle;height:34px;margin-top:5px;"></span></button><button id="itemize" onclick="itemizedbill()" data-toggle="tooltip" data-placement="top" title="Itemized Bill"><span class="glyphicon glyphicon-list" style="vertical-align:middle;height:34px;margin-top:5px;"></span></button>
+
+				</div>
+				<div id="splitequal" style="display:none">
+					<h1>Split Equally</h1><br />
+					<div id="equalbor">
+						<div id="equaldetailleft" style="float:left"></div>
+						<div id="equaldetailright" style="float:right"></div>
+					</div>
+					<div style="margin-right:40%;"><input type="button" id="equalbutton" value="Done" class="btn btn-large btn-orange" onclick="submitequal()"/></div>
+				</div>
+				<div id="splitexact" style="display:none">
+					<h1>Split By Exact Amount</h1><br />
+					<div id="exactdetail">
+						<div id="exactdetailleft" style="display:inline-block;float:left;"></div>
+						<div id="exactdetailright" style="display:inline-block;float:right;"></div>
+					</div>
+					<br />
+					<div class="exacttotal" style="height:100px;">
+						<div style="display:inline-block;float:left;">
+							<strong style="font-size:25px;">TOTAL</strong>
+						</div>
+						<div class="exactsubtotal" style="display:inline-block;float:right;width:60px;margin-right:50px;">
+							<span id="exactowed_total" style="font-size:20px;text-align:right;"></span>
+							<br />
+							<span id="exactowed_remaining" style="font-size:15px;color:#808080;text-align:right;"></span>
+						</div>
+					</div>
+					<input type="button" id="exactbutton" value="Done" class="btn btn-large btn-orange" onclick="submitexact()"/>
+					<span id="exacterror" style="color:red;display:none;">Input contribution's don't total up to bill amount. Please check again and submit.</span>
+				</div>
+				<div id="splitpercent" style="display:none">
+					<h1>Split By Percentage</h1><br />
+					<div id="percentdetail">
+						<div id="percentdetailleft" style="display:inline-block;float:left"></div>
+						<div id="percentdetailright" style="display:inline-block;float:right"></div>
+					</div>
+					<div class="percenttotal" style="height:100px;">
+						<div style="display:inline-block;float:left;">
+							<strong style="font-size:25px;">TOTAL</strong>
+						</div>
+						<div class="percentsubtotal" style="display:inline-block;float:right;width:60px;margin-right:50px;">
+							<span id="percentowed_total" style="font-size:20px;text-align:right;"></span>
+							<br />
+							<span id="percentowed_remaining" style="font-size:15px;color:#808080;text-align:right;"></span>
+						</div>
+					</div>
+					<input type="button" id="percentbutton" value="Done" class="btn btn-large btn-orange" onclick="submitpercent()"/>
+					<span id="percenterror" style="color:red;display:none">Input contribution's don't total up to 100%. Please check again and submit.</span>
+				</div>
+				<div id="splitshare" style="display:none">
+					<h1>Split By Share</h1><br />
+					<div id="sharedetail">
+						<div id="sharedetailleft" style="float:left"></div>
+						<div id="sharedetailright" style="float:right"></div>
+					</div>
+					<div style="float:left;"><input type="button" id="sharebutton" class="btn btn-large btn-orange" value="Done" onclick="submitshare()"/></div>
+				</div>
+				<div id="itemizedbill" style="display:none">
+					<h1>Itemized Bill</h1><br />
+					<div id="erroritem" style="color:red;display:none">
+						Please recheck your entries again. It seems you have made an error. Thank You!
+					</div>
+					<div id="itemizetable">					
+						<table id="itemtable" border="1">
+							<tbody id="tablehead"></tbody>
+							<tbody id="tablebody"></tbody>
+						</table>	
+						<table id="extratable" border="1">
+							<tbody id="tableextra"></tbody>
+						</table>	
+						<table id="lefttable" border="1">
+							<tbody id="tableleft"></tbody>
+						</table>	
+					</div>
+					<br />
+					<input type="button" class="btn btn-large btn-orange" id="itembutton" value="Done" onclick="submititem()"/>
+				</div>
+		    	</div>
+		    </div>
+		</div>
+	     </div>
+	</div>
+	<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+	<script src="{{ url_for('static', filename='ajaxdash.js') }}"></script>
+</body>
+</html>

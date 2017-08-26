@@ -1,0 +1,459 @@
+.glyphicon-thumbs-down,.glyphicon-trash,.glyphicon-thumbs-up:hover
+{
+	cursor:pointer;
+}
+
+#netbody tr:nth-child(odd){
+	background-color:#7094db;
+}
+
+#netbody tr:nth-child(even){
+	background-color:#adc2eb;
+}
+
+.dark{
+	background-color:#7094db;
+}
+
+.light{
+	background-color:#adc2eb;
+}
+
+#netbody tr:hover
+{
+	background-color:#ebf0fa;
+}
+
+#recentbody tr:hover
+{
+	background-color:#ebf0fa;
+}
+
+#settlebody tr:hover
+{
+	background-color:#ebf0fa;
+}
+
+#allbody tr:hover
+{
+	background-color:#ebf0fa;
+}
+
+.pull-right{
+	float:right;
+}
+
+.dropdown-toggle{
+	color:#f2f2f2;
+	font-size:200%;
+}
+
+.dropdown-toggle:hover{
+	color:#24478f;	
+	font-size:200%;
+}
+
+.nav{
+	margin-right: 250px;
+	height: 60px;
+}
+
+.dropdown{
+	height: 60px;
+}
+
+.nav.pull-right .dropdown-menu{
+	padding:0;
+	margin-top:-1px;
+	margin-left:-135px;
+}
+
+.dropdown-menu{
+	z-index:99999;
+}
+
+.dropdown-menu > li{
+	font-size:175%;
+}
+
+.center_container{
+	float:left;
+	height:100%;
+	margin-top:20px;
+	margin-left:300px;
+}
+
+#left_sidebar{
+	float:left;
+	margin-left:0;
+	height:100%;
+	padding-right:20px;
+}
+
+#view_links{
+	margin-left:0;
+	padding-right:10px;
+}
+
+#left_sidebar #view_links a{
+	display:block;
+	height: 35px;
+	padding: 3px 18px 5px 5px;
+	font-size:22px;
+	overflow: hidden;
+	text-decoration: none;
+}
+
+#left_sidebar #view_links a:hover{
+	background-color:#24478f;
+	color:#f2f2f2;
+	text-decoration:none;
+}
+
+.open{
+	border-left: 6px solid #24478f;
+}
+
+#center_column{
+	width:800px;
+	height:100%;
+	float:right;
+	margin-left:50px;	
+	box-shadow: 5px 0 5px -5px #24478f, -5px 0 5px -5px #24478f;
+}
+
+#center_column .dashboard.header{
+	height:74px;
+	width:800px;
+	background-color:#adc2eb;
+}
+
+#center_column > .header{
+	position: relative;
+}
+
+.topbar h1{
+	display: inline-block;
+	vertical-align:middle;
+	padding-left:20px;
+}
+
+#bill h1{
+	display: inline-block;
+	vertical-align:middle;
+	padding-left:20px;
+}
+
+#settleup h1{
+	display: inline-block;
+	vertical-align:middle;
+	padding-left:20px;
+}
+
+#recentact h1{
+	display: inline-block;
+	vertical-align:middle;
+	padding-left:20px;
+}
+
+#allexpense h1{
+	display: inline-block;
+	vertical-align:middle;
+	padding-left:20px;
+}
+
+.topbar .actions{
+	position:absolute;
+	top:13px;
+	right:10px;
+	display:inline-block;
+}
+
+.topbar .actions > a.btn, .topbar .actions > .btn-group{
+	display:inline-block;
+	vertical-align:middle;
+}
+
+.btn-orange{
+	background-color: #ff652f;
+	color: #fff;
+}
+
+.btn-theme{
+	background-color: #24478f;
+	color: #fff;
+}
+
+.btn-large{
+	padding: 9px 14px;
+	font-size:25px;
+	line-height: normal;
+	border-radius: 5px;
+}
+
+.btn-orange:hover{
+	background-color: #ffa280;
+}
+
+.btn-theme:hover{
+	background-color: #85a3e0;
+}
+
+#bill{
+	display:none;
+}
+
+#settleup{
+	display:none;
+}
+
+#recentact{
+	display:none;
+}
+
+#allexpense{
+	display:none;
+}
+
+#center_column #bill{
+	height:74px;
+	width:800px;
+	background-color:#adc2eb;
+}
+
+#center_column #allexpense{
+	height:74px;
+	width:800px;
+	background-color:#adc2eb;
+}
+
+#center_column #settleup{
+	height:74px;
+	width:800px;
+	background-color:#adc2eb;
+}
+
+#center_column #recentact{
+	height:74px;
+	width:800px;
+	background-color:#adc2eb;
+}
+
+#more, #you, #equally, #unequally, #multiple{
+	padding:4px;
+	background-color:#24478f;
+	color:#f2f2f2;
+	border-radius:10px;
+}
+
+#more, #you, #equally, #unequally, #multiple:hover{
+	text-decoration:none;
+	cursor:pointer;
+}
+
+#addmorebutton{
+	margin:5px;
+}
+
+.user{
+	margin-bottom:5px;
+}
+
+#payeeform{
+	display:none;
+}
+
+#inline_button{
+	display:inline-block;
+}
+
+#status{
+	display:none;
+}
+
+#meta_data{
+	display:block;
+}
+
+#expenseform{
+	display:none;
+	margin:5px;
+}
+
+.active{
+	outline:0;
+	z-index:-2;
+	box-shadow:inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05);
+	background-color:#e6e6e6;
+}
+
+#settle_message{
+	padding-top:30px;
+	text-align:center;
+	color:#adc2eb;
+}
+
+.ui-widget{
+	padding:30px;
+}
+
+#savefriends{
+	padding-left:30px;
+	padding-top:15px;
+	padding-bottom:20px;
+}	
+
+#addmorebutton{
+	padding-left:25px;
+}
+
+#adding{
+	margin:5%;
+	width:70%;
+	float:left;
+	border: 2px solid #24478f;
+}
+
+.user{
+	border: 1px solid #f2f2f2;
+	background-color:#adc2eb;
+	border-radius:0px 7px 7px 0px;
+	outline:0;
+	height:40px;
+	font-size:40px;
+	padding-left:4px;
+}
+
+#meta_add{
+	padding:3%;
+	width:75%;
+	margin:5%;
+	float:left;
+	border: 2px solid #24478f;
+}
+
+#description, #totalamount{
+	margin:3%;
+	border: 1px solid #f2f2f2;
+	background-color:#adc2eb;
+	border-radius:0px 7px 7px 0px;
+	outline:0;
+	padding-left:4px;
+	font-size:25px;
+}
+
+#totalamount{
+	height:33px;
+	font-size:25px;
+}
+
+#headhi{
+	margin-top:4%;
+	right:0px;
+}
+
+#addmore, #submit, #headhi{
+	padding:4px;
+	border:none;
+	border-radius:10px;
+	font-size:25px;
+}
+
+#addmore, #submit, #headhi:hover{
+	cursor:pointer;	
+	text-decoration:none;
+}
+
+#addmore{
+	background-color:#24478f;
+	height:32px;
+	color:#fff;
+}
+
+#submit, #headhi{
+	background-color:#ff652f;
+	color:#fff;
+	height:40px;
+}
+
+#status{
+	padding:4%;
+	margin:4%;
+	width:90%;
+	border: 2px solid #24478f;
+	border-radius: 10px;
+	font-size:27px;
+}
+
+#mainforms{
+	display:inline-block;
+	width:100%;
+	margin-left:4%;
+	margin-right:4%;
+}
+
+#payeeform, #expenseform{
+	width:40%;
+}
+
+#payeeform{
+	padding-top:53px;
+}
+
+#expenseform{
+	margin-right:50px;
+}
+
+#inline_button{
+	width:100%;
+	font-size:200%;	
+}
+
+#splitequal h1{
+	border-bottom:2px solid black;
+}
+
+#splitexact h1{
+	border-bottom:2px solid black;
+}
+
+#splitequal h1{
+	padding-bottom: 10px;
+}
+
+#splitexact h1{
+	padding-bottom: 10px;
+}
+
+#splitpercent h1{
+	border-bottom:2px solid black;
+}
+
+#splitpercent h1{
+	padding-bottom: 10px;
+}
+
+#splitshare h1{
+	border-bottom:2px solid black;
+}
+
+#splitshare h1{
+	padding-bottom: 10px;
+}
+
+#payeeform h1{
+	border-bottom:2px solid black;
+}
+
+#payeeform h1{
+	padding-bottom: 10px;
+}
+
+#itemizedbill h1{
+	border-bottom:2px solid black;
+}
+
+#itemizedbill h1{
+	padding-bottom: 10px;
+}
+
